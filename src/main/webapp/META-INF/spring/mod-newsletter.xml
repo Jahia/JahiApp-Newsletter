@@ -19,6 +19,7 @@
         <property name="subscriptionService" ref="subscriptionService"/>
         <property name="mailService" ref="MailService"/>
         <property name="mailConfirmationTemplate" value="/mails/templates/subscribeConfirmation.vm"/>
+        <property name="requireAuthenticatedUser" value="false"/>
     </bean>
 
     <bean class="org.jahia.modules.newsletter.UnsubscribeAction">
@@ -26,12 +27,14 @@
         <property name="subscriptionService" ref="subscriptionService"/>
         <property name="mailService" ref="MailService"/>
         <property name="mailConfirmationTemplate" value="/mails/templates/unsubscribeConfirmation.vm"/>
+        <property name="requireAuthenticatedUser" value="false"/>
     </bean>
 
     <bean class="org.jahia.modules.newsletter.ConfirmAction">
         <property name="subscriptionService" ref="subscriptionService"/>
         <property name="subscriptionConfirmationPagePath" value="/newsletter-subscribe-confirmation"/>
         <property name="unsubscriptionConfirmationPagePath" value="/newsletter-unsubscribe-confirmation"/>
+        <property name="requireAuthenticatedUser" value="false"/>
     </bean>
     
     <!-- toolbar and context menu items -->
