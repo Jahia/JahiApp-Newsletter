@@ -172,9 +172,10 @@
 			&nbsp;<a href="#unsubscribeFormPanel-${currentNode.identifier}" rel="${currentNode.identifier}" class="showSubscriptionForm" title="<fmt:message key='label.unsubscribe'/>"><img src="<c:url value='${url.currentModule}/icons/unsubscribe.png'/>" alt="<fmt:message key='label.unsubscribe'/>" title="<fmt:message key='label.subscribe'/>" height="16" width="16"/><fmt:message key='label.unsubscribe'/></a>
 			</p>
 			<div class="jahiaFancyboxForm">
-			<div id="subscribeFormPanel-${currentNode.identifier}" style="width: 400px; height: ${180 + fn:length(currentNode.properties['j:fields'])*50}px;">
+			<div id="subscribeFormPanel-${currentNode.identifier}" style="width: 400px; height: ${230 + fn:length(currentNode.properties['j:fields'])*50}px;">
 			    <div class="popup-bodywrapper">
 			        <h3 class="boxmessage-title"><fmt:message key='label.subscribe'/>&nbsp;${subscribeTitle}</h3>
+                    <template:tokenizedForm>
 			        <form class="formMessage jahiaSubscribeForm" id="subscribeForm-${currentNode.identifier}" method="post" action="<c:url value='${url.base}${target.path}.subscribe.do'/>">
 			        	<c:forEach items="${currentNode.properties['j:fields']}" var="fld">
 			        		<input type="hidden" name="j:fields" value="${fld.string}" />
@@ -191,18 +192,24 @@
 				                    <input type="text" name="${fld.string}" id="subscribeForm-${currentNode.identifier}-${fldKey}" class="field" value="" tabindex="${20 + status.count}" size="30"/>
 				                </p>
 			                </c:forEach>
+                            <p class="field">
+                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha />
+                                <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
+                            </p>
 
 			                <input class="button" type="button" value=" <fmt:message key="label.subscribe"/> "
 			                       tabindex="30" onclick="$('#subscribeForm-${currentNode.identifier}').submit();">
 			            </fieldset>
 			        </form>
+                    </template:tokenizedForm>
 			    </div>
 			</div>
 			</div>
 			<div class="jahiaFancyboxForm">			
-			<div id="unsubscribeFormPanel-${currentNode.identifier}" style="width: 400px;height: 180px;">
+			<div id="unsubscribeFormPanel-${currentNode.identifier}" style="width: 400px;height: 230px;">
 			    <div class="popup-bodywrapper">
 			        <h3 class="boxmessage-title"><fmt:message key='label.unsubscribe'/>&nbsp;${subscribeTitle}</h3>
+                    <template:tokenizedForm>
 			        <form class="formMessage jahiaUnsubscribeForm" id="unsubscribeForm-${currentNode.identifier}" method="post" action="<c:url value='${url.base}${target.path}.unsubscribe.do'/>">
 			            <fieldset>
 			                <p>
@@ -210,10 +217,16 @@
 			                    <input type="text" name="email" id="subscribeForm-${currentNode.identifier}-email" class="field" value="" tabindex="20" size="40"/><span id="unsubscribeError-${currentNode.identifier}" style="color:red;"></span>
 			                </p>
 
+                            <p>
+                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha /><br/>
+                                <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
+                            </p>
+
 			                <input class="button" type="button" value=" <fmt:message key="label.unsubscribe"/> "
 			                       tabindex="30" onclick="$('#unsubscribeForm-${currentNode.identifier}').submit();">
 			            </fieldset>
 			        </form>
+                    </template:tokenizedForm>
 			    </div>
 			</div>
 			</div>
