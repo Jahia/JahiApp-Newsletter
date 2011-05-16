@@ -21,9 +21,6 @@
 
 <template:include view="hidden.header"/>
 
-<p>
-    <img src="<c:url value='${url.currentModule}/images/jahiapp-newsletter-small.png'/>"/>
-</p>
 <table width="100%" cellspacing="0" cellpadding="5" border="0" class="table">
     <thead>
     <tr>
