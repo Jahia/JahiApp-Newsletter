@@ -46,6 +46,13 @@
     <name>Jahia Newsletter</name>
     <packaging>war</packaging>
     <description>Jahia template module that enables newsletter subscription management features.</description>
+
+    <scm>
+        <connection>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</connection>
+        <url>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</url>
+        <developerConnection>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</developerConnection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.jahia.server</groupId>
