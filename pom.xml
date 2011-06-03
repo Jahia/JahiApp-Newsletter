@@ -42,11 +42,11 @@
     <parent>
         <artifactId>jahia-modules</artifactId>
         <groupId>org.jahia.modules</groupId>
-        <version>6.5.0.0</version>
+        <version>6.5.1.0-SNAPSHOT</version>
     </parent>
     <groupId>org.jahia.modules</groupId>
     <artifactId>newsletter</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <name>Jahia Newsletter</name>
     <packaging>war</packaging>
     <description>Jahia template module that enables newsletter subscription management features.</description>
@@ -61,13 +61,13 @@
         <dependency>
             <groupId>org.jahia.server</groupId>
             <artifactId>jahia-impl</artifactId>
-            <version>6.5.0.0</version>
+            <version>6.5.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jahia.server</groupId>
             <artifactId>jahia-taglib</artifactId>
-            <version>6.5.0.0</version>
+            <version>6.5.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
