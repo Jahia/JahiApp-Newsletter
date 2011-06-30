@@ -56,6 +56,7 @@
 						}
 						if (doClose) {
 							$.fancybox.close();
+                            window.location.reload();
 						} else {
 							$.fancybox.hideActivity();
 						}
@@ -95,6 +96,7 @@
 						}
 						if (doClose) {
 							$.fancybox.close();
+                            window.location.reload();
 						} else {
 							$.fancybox.hideActivity();
 						}
