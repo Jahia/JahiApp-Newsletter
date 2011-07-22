@@ -123,7 +123,7 @@
 		            'transitionIn'       : 'none',
 		            'transitionOut'      : 'none',
 		            'onStart'            : function(selectedArray, selectedIndex, selectedOpts) {
-		            	$('#subscribeForm-' + $(selectedArray).attr('rel') + '-email').val('');
+		            	$('#subscribeForm-' + $(selectedArray).attr('rel') + ' input[type="text"]').val('');
 		            }
 		        });
 		        $("#subscribeForm-${currentNode.identifier}").submit(function() {
@@ -184,7 +184,9 @@
 			        <h3 class="boxmessage-title"><fmt:message key='label.subscribe'/>&nbsp;${subscribeTitle}</h3>
                     <template:tokenizedForm>
 			        <form class="formMessage jahiaSubscribeForm" id="subscribeForm-${currentNode.identifier}" method="post" action="<c:url value='${url.base}${target.path}.subscribe.do' />">
-			            <input type="hidden" name="j:to" id="destinationUserKey" value="" />
+                        <c:forEach items="${currentNode.properties['j:fields']}" var="fld">
+                            <input type="hidden" name="j:fields" value="${fld.string}" />
+                        </c:forEach>
 			            <fieldset>
 			                <p>
 			                	<label for="subscribeForm-${currentNode.identifier}-email" class="left"><fmt:message key="label.email"/>*</label>
