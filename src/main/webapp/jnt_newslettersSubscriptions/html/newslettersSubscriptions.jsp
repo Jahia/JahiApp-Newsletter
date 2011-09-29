@@ -200,7 +200,7 @@
 				                </p>
 			                </c:forEach>
                              <p class="field">
-                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha displayReloadLink="true" />
+                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha />
                                 <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
                             </p>
 			                <input class="button" type="button" value=" <fmt:message key="label.subscribe"/> "
@@ -224,7 +224,7 @@
 			                    <input type="text" name="email" id="subscribeForm-${currentNode.identifier}-email" class="field" value="" tabindex="20" size="40"/><span id="unsubscribeError-${currentNode.identifier}" style="color:red;"></span>
 			                </p>
                             <p class="field">
-                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha displayReloadLink="true" />
+                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha />
                                 <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
                             </p>
 			                <input class="button" type="button" value=" <fmt:message key="label.unsubscribe"/> "

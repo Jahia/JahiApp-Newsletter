@@ -195,7 +195,7 @@
 				                </p>
 			                </c:forEach>
                             <p class="field">
-                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha displayReloadLink="true" />
+                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha />
                                 <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
                             </p>
 
@@ -220,7 +220,7 @@
 			                </p>
 
                             <p>
-                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha displayReloadLink="true" /><br/>
+                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha /><br/>
                                 <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
                             </p>
 
