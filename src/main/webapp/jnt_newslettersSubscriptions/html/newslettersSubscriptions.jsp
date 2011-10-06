@@ -43,7 +43,7 @@
 						} else if (data.status == "invalid-email") {
                             $('#subscribeFormPanel-${currentNode.identifier}').effect("shake", {times:4}, 60);
                             <fmt:message key="messsage.subscriptions.invalidEmailAddress" var="msg"/>
-                            $('#subscribeError-${currentNode.identifier}').html('${msg}')					    	
+                            $('#subscribeError-${currentNode.identifier}').html("${functions:escapeJavaScript(msg)}")					    	
 					        doClose=false;
 						} else if (data.status == 'mail-sent') {
                             <fmt:message key="messsage.subscriptions.mail" var="msg"/>
@@ -130,7 +130,7 @@
 		        	if (this.email.value.length == 0) {
 				    	<fmt:message key="messsage.subscriptions.provideEmailAddress" var="msg"/>
                         $('#subscribeFormPanel-${currentNode.identifier}').effect("shake", {times:4}, 60)
-                        $('#subscribeError-${currentNode.identifier}').html('${msg}')
+                        $('#subscribeError-${currentNode.identifier}').html("${functions:escapeJavaScript(msg)}")
 			        	return false;
 		        	}
 		        	
@@ -142,7 +142,7 @@
 		        	if (this.email.value.length == 0) {
 				    	<fmt:message key="messsage.subscriptions.provideEmailAddress" var="msg"/>
                         $('#unsubscribeFormPanel-${currentNode.identifier}').effect("shake", {times:4}, 60)
-                        $('#unsubscribeError-${currentNode.identifier}').html('${msg}')
+                        $('#unsubscribeError-${currentNode.identifier}').html("${functions:escapeJavaScript(msg)}")
 			        	return false;
 		        	}
 
