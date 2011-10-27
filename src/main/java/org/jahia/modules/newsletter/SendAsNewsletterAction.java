@@ -265,8 +265,8 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
         try {
             Map<String,String> headers = new HashMap<String,String>();
             headers.put("jahiatoken",TokenAuthValveImpl.addToken(node.getSession().getUser()));
-            String out = httpClientService.executePost("http://localhost:8080"+
-                    Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
+            String out = httpClientService.executePost("http://" + node.getResolveSite().getServerName()+":" + 
+            			Jahia.getJahiaHttpPort() + Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
                             + node.getResolveSite().getDefaultLanguage() + node.getPath()
                             + ".sendAsNewsletter.do", null, headers);
             logger.info(out);
