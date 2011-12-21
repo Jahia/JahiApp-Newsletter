@@ -96,6 +96,7 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
     private JahiaSitesService siteService;
     private SubscriptionService subscriptionService;
     private JahiaUserManagerService userService;
+    private String localServerURL;
 
     public ActionResult doExecute(final HttpServletRequest req, final RenderContext renderContext,
                                   Resource resource, JCRSessionWrapper session, Map<String, List<String>> parameters, URLResolver urlResolver)
@@ -265,8 +266,7 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
         try {
             Map<String,String> headers = new HashMap<String,String>();
             headers.put("jahiatoken",TokenAuthValveImpl.addToken(node.getSession().getUser()));
-            String out = httpClientService.executePost("http://" + node.getResolveSite().getServerName()+":" + 
-            			Jahia.getJahiaHttpPort() + Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
+            String out = httpClientService.executePost(localServerURL + Render.getRenderServletPath() + "/live/"
                             + node.getResolveSite().getDefaultLanguage() + node.getPath()
                             + ".sendAsNewsletter.do", null, headers);
             logger.info(out);
@@ -303,4 +303,7 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
         this.siteService = siteService;
     }
 
+    public void setLocalServerURL(String localServerURL) {
+        this.localServerURL = localServerURL;
+    }
 }
