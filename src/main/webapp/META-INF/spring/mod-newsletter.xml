@@ -11,7 +11,7 @@
         <property name="subscriptionService" ref="subscriptionService"/>
         <property name="userService" ref="JahiaUserManagerService"/>
         <property name="siteService" ref="JahiaSitesService"/>
-        <property name="localServerURL" value="http://127.0.0.1:8080"/>
+        <property name="localServerURL" value="${localServerURL:http://127.0.0.1:8080}"/>
         <!--If your jahia is not deployed in ROOT context please provide contextpath in this URL-->
         <!--<property name="localServerURL" value="http://127.0.0.1:8080/jahia"/>-->
     </bean>
