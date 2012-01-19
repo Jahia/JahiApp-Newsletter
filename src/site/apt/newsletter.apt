@@ -1,0 +1,53 @@
+Jahia Newsletter Module
+
+* {Overview}
+
+  This module provides the functionality for creating and maintaining multilingual personalized newsletters,
+  managing user subscriptions (registered as well as non-registered), testing newsletter sending and finally
+  sending or scheduling newsletter sending at the provided time.
+  
+* {Prerequisites}
+
+  The module requires a mail server be properly configured and enabled in the
+  <Jahia Administration \-\> Server Settings \-\> E\-mail settings>. For details on how to configure
+  a mail server in Jahia, please, refer to the corresponding Jahia Knowledge Base
+  {{{http://jira.jahia.org/browse/JKB-20} article}}.  
+  
+* {Deployment}
+
+  This module can be deployed using Jahia Studio to any existing virtual site by selecting the <newsletter>
+  template set in the selector, than using <Deploy templates> menu to select the target virtual site.
+
+[./images/deployment.png]
+
+* {Import}
+
+  The Subscription Manager import accepts CSV files (with ',' or ';' as a value separators).
+  First line is a "header" with fields.
+
+  In case of registered users (users, which are present in Jahia) it is just one field - j:nodename - which corresponds
+  to the username in Jahia.
+
+  For example:
+
++------------
+  j:nodename
+  test1
+  test2
+  test3
++------------
+
+  For non-registered users, you should at least provide the j:email value.
+  j:firstName and j:lastName for first and last name are optional, but are displayed in the Subscription Manager if you provide them.
+
++------------
+  j:email,j:firstName,j:lastName
+  milla@acme.com,Milla,Miller
+  emily@acme.com,Emily,Emilson
+  judy@acme.com,Judy,Judson
++------------
+
+
+* {Usage}
+
+  The module usage is shown in the following {{{http://vimeo.com/19176709} screencast}}.
