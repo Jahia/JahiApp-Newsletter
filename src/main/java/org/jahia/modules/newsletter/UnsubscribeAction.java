@@ -90,7 +90,7 @@ public class UnsubscribeAction extends Action {
 	        HttpServletRequest req) throws RepositoryException {
 		return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()
 		        + Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
-		        + newsletterNode.getResolveSite().getDefaultLanguage() + newsletterNode.getPath()
+		        + newsletterNode.getLanguage() + newsletterNode.getPath()
 		        + ".confirm.do?key=" + confirmationKey + "&exec=rem";
 	}
 

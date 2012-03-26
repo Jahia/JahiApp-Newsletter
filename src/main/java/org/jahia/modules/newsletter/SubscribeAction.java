@@ -40,19 +40,8 @@
 
 package org.jahia.modules.newsletter;
 
-import static javax.servlet.http.HttpServletResponse.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.jcr.RepositoryException;
-import javax.script.ScriptException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.jahia.bin.ActionResult;
 import org.jahia.bin.Action;
+import org.jahia.bin.ActionResult;
 import org.jahia.bin.Jahia;
 import org.jahia.bin.Render;
 import org.jahia.services.content.JCRCallback;
@@ -70,6 +59,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.RepositoryException;
+import javax.script.ScriptException;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 /**
  * An action for subscribing a user to the target node.
@@ -186,7 +186,7 @@ public class SubscribeAction extends Action {
 
             bindings.put("confirmationlink", req.getScheme() +"://" + req.getServerName() + ":" + req.getServerPort() +
                     Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
-                    + node.getResolveSite().getDefaultLanguage() + node.getPath() + ".confirm.do?key="+confirmationKey+"&exec=add");
+                    + node.getLanguage() + node.getPath() + ".confirm.do?key="+confirmationKey+"&exec=add");
             try {
                 mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailService.defaultSender(), null, null,
                         locale, "Jahia Newsletter");
