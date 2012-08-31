@@ -20,7 +20,7 @@
           </rich-text>
         </custom-rows-960gs-col1>
       </newsletter-subscribe-confirmation>
-      <newsletter-unsubscribe-confirmation j:templateNode="/templateSets/newsletter/templates/newsletter-confirmation" jcr:primaryType="jnt:page>
+      <newsletter-unsubscribe-confirmation j:templateNode="/templateSets/newsletter/templates/newsletter-confirmation" jcr:primaryType="jnt:page">
         <j:translation_en jcr:language="en" jcr:mixinTypes="mix:title" jcr:primaryType="jnt:translation" jcr:title="Newsletter unsubscription confirmation" />
         <j:translation_de jcr:language="de" jcr:mixinTypes="mix:title" jcr:primaryType="jnt:translation" jcr:title="Newsletter Abmeldebestätigung" />
         <j:translation_fr jcr:language="fr" jcr:mixinTypes="mix:title" jcr:primaryType="jnt:translation" jcr:title="Confirmation de désabonnement Newsletter" />
