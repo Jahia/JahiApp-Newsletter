@@ -148,6 +148,9 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
 
                                 JahiaUser user = subscription.isRegisteredUser() ? userService.lookupUserByKey(subscription.getSubscriber()) : userService.lookupUser("guest");
                                 RenderContext letterContext = new RenderContext(renderContext.getRequest(), renderContext.getResponse(), user);
+                                letterContext.setEditMode(renderContext.isEditMode());
+                                letterContext.setServletPath(renderContext.getServletPath());
+                                letterContext.setWorkspace(renderContext.getWorkspace());
                                 Locale language = subscription.isRegisteredUser() ? 
                                         UserPreferencesHelper.getPreferredLocale(user , site) : 
                                             LanguageCodeConverters.languageCodeToLocale(subscription.getProperties().get("j:preferredLanguage"));
@@ -212,11 +215,11 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
             JCRTemplate.getInstance().doExecute(false, user, workspace, locale, new JCRCallback<String>() {
                 public String doInJCR(JCRSessionWrapper session) throws RepositoryException {
                     boolean isEdit = renderContext.isEditMode();
-                    boolean isLive = renderContext.isLiveMode();
-                    
+                    String previousWorkspace = renderContext.getWorkspace();
+
                     try {
-                        renderContext.setEditMode(Constants.EDIT_WORKSPACE.equals(workspace));
-                        renderContext.setLiveMode(Constants.LIVE_WORKSPACE.equals(workspace));
+                        renderContext.setEditMode(false);
+                        renderContext.setWorkspace(workspace);
                         
                         JCRNodeWrapper node = session.getNodeByIdentifier(id);
                         Resource resource = new Resource(node, "html", null, "page");
@@ -246,7 +249,7 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
                         throw new RepositoryException(e);
                     } finally {
                         renderContext.setEditMode(isEdit);
-                        renderContext.setLiveMode(isLive);
+                        renderContext.setWorkspace(previousWorkspace);
                     }
                     return null;
                 }
