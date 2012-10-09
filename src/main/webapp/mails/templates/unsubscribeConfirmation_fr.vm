@@ -7,7 +7,7 @@
 Bonjour,
 </p>
 <p>
-Merci de bien vouloir confirmer votre d�sabonnement � ${newsletter.displayableName} en cliquant <a href="${confirmationlink}">ici</a>
+Merci de bien vouloir confirmer votre désabonnement à ${newsletter.displayableName} en cliquant <a href="${confirmationlink}">ici</a>
 </p>
 
 </body>
