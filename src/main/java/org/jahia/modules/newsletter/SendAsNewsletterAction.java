@@ -41,10 +41,8 @@
 package org.jahia.modules.newsletter;
 
 import org.apache.commons.lang.StringUtils;
-import org.jahia.api.Constants;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
-import org.jahia.bin.Jahia;
 import org.jahia.bin.Render;
 import org.jahia.exceptions.JahiaException;
 import org.jahia.params.valves.TokenAuthValveImpl;
