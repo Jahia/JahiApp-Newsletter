@@ -43,7 +43,7 @@
         <j:translation_fr jcr:language="fr" jcr:mixinTypes="mix:title" jcr:primaryType="jnt:translation" jcr:title="Newsletter Abonnements" />
         <j:translation_de jcr:language="de" jcr:mixinTypes="mix:title" jcr:primaryType="jnt:translation" jcr:title="Newsletter Abonnements" />
         <pagecontent jcr:primaryType="jnt:contentList">
-          <newsletters-subscriptions jcr:primaryType="jnt:newslettersSubscriptions" />
+          <newsletters-subscriptions jcr:primaryType="jnt:newslettersSubscriptions" j:fields="j:firstName"/>
         </pagecontent>
         <custom-rows-960gs-col1 jcr:primaryType="jnt:contentList">
           <newsletter-subscriptions j:fields="" jcr:primaryType="jnt:newslettersSubscriptions">
