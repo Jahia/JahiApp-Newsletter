@@ -1,7 +1,6 @@
-###############################################################################
 package org.jahia.modules.newsletter.rules
 
-#list any import classes here.
+// list any import classes here.
 import org.jahia.services.content.rules.*
 import org.jahia.services.content.*
 import javax.jcr.observation.Event
@@ -11,11 +10,10 @@ import org.jahia.services.content.*
 
 expander rules.dsl
 
-#declare any global variables here
+// declare any global variables here
 global User user
 global Service service
 global Logger logger
-###############################################################################
 
 rule "Auto-split subscriptions"
 	salience 101
