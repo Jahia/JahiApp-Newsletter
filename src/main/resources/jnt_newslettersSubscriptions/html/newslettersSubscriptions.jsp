@@ -98,7 +98,7 @@
 							$.fancybox.close();
                             window.location.reload();
 						} else {
-							$.fancybox.hideActivity();
+							$.fancybox.hideLoading();
 						}
 					},
 					error: function (xhr, textStatus, errorThrown) {
