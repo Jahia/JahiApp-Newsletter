@@ -58,7 +58,7 @@
 							$.fancybox.close();
                             window.location.reload();
 						} else {
-							$.fancybox.hideActivity();
+							$.fancybox.hideLoading();
 						}
 					},
 					error: function (xhr, textStatus, errorThrown) {
@@ -98,7 +98,7 @@
 							$.fancybox.close();
                             window.location.reload();
 						} else {
-							$.fancybox.hideActivity();
+							$.fancybox.hideLoading();
 						}
 					},
 					error: function (xhr, textStatus, errorThrown) {
@@ -119,10 +119,10 @@
 		            'centerOnScroll'     : true,
 		            'overlayOpacity'     : 0.6,
 		            'titleShow'          : false,
-		            'showNavArrows'      : false,
+		            'arrows'      : false,
 		            'transitionIn'       : 'none',
 		            'transitionOut'      : 'none',
-		            'onStart'            : function(selectedArray, selectedIndex, selectedOpts) {
+		            'afterLoad'            : function(selectedArray, selectedIndex, selectedOpts) {
 		            	$('#subscribeForm-' + $(selectedArray).attr('rel') + ' input[type="text"]').val('');
 		            	$('#subscribeError-${currentNode.identifier}').html('');
 		            	$('#unsubscribeError-${currentNode.identifier}').html('');
@@ -136,7 +136,7 @@
 			        	return false;
 		        	}
 		        	
-		            $.fancybox.showActivity();
+		            $.fancybox.showLoading();
 		            jahiaSubscribe(this.action, $(this).serialize());
 		        	return false;
 		        });
@@ -148,7 +148,7 @@
 			        	return false;
 		        	}
 
-		            $.fancybox.showActivity();
+		            $.fancybox.showLoading();
 		            jahiaUnsubscribe(this.action, $(this).serialize());
 		        	return false;
 		        });

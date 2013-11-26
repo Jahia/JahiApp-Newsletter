@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+		http://www.springframework.org/schema/webflow
+		http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+    <var name="flowHandler" class="org.jahia.modules.newsletter.sitesettings.ManageNewsletterFlowHandler"/>
+
+    <on-start>
+        <set name="flowScope.newsletterProperties" value="newsletterProperties" type="java.util.Map" />
+    </on-start>
+
+    <view-state id="manageNewsletters">
+        <on-render>
+            <evaluate expression="flowHandler.getSiteNewsletters(flowRequestContext)" result="requestScope.newsletters"/>
+        </on-render>
+        <transition on="createNewsletter" to="formNewsletter" bind="false" validate="false"/>
+        <transition on="editNewsletter" to="formNewsletter" bind="false" validate="false">
+            <set name="flowScope.newsletterUUID" value="requestParameters.selectedNewsletter" type="java.lang.String" />
+        </transition>
+        <transition on="removeNewsletter" to="manageNewsletters" bind="false" validate="false">
+            <evaluate expression="flowHandler.removeNewsletter(flowRequestContext, messageContext, requestParameters.selectedNewsletter)" />
+        </transition>
+        <transition on="manageIssues" to="manageIssues" bind="false" validate="false">
+            <set name="flowScope.newsletterUUID" value="requestParameters.selectedNewsletter" type="java.lang.String" />
+        </transition>
+        <transition on="manageSubscriptions" to="manageSubscriptions" bind="false" validate="false">
+            <set name="flowScope.newsletterUUID" value="requestParameters.selectedNewsletter" type="java.lang.String" />
+        </transition>
+    </view-state>
+
+    <view-state id="manageIssues" >
+        <on-render>
+            <evaluate expression="flowHandler.getNewsletter(flowRequestContext, flowScope.newsletterUUID)" result="requestScope.newsletter"/>
+            <evaluate expression="flowHandler.getIssues(flowRequestContext, flowScope.newsletterUUID)" result="requestScope.issues"/>
+        </on-render>
+        <transition on="createIssue" to="formIssue" bind="false" validate="false"/>
+        <transition on="editIssue" to="formIssue" bind="false" validate="false">
+            <set name="flowScope.issueUUID" value="requestParameters.selectedIssue" type="java.lang.String" />
+        </transition>
+        <transition on="testIssue" to="formTestIssue" bind="false" validate="false">
+            <set name="flowScope.issueUUID" value="requestParameters.selectedIssue" type="java.lang.String" />
+        </transition>
+        <transition on="sendIssue" to="manageIssues" bind="false" validate="false">
+            <evaluate expression="flowHandler.sendIssue(flowRequestContext, messageContext, requestParameters.selectedIssue)"/>
+        </transition>
+        <transition on="removeIssue" to="manageIssues" bind="false" validate="false">
+            <evaluate expression="flowHandler.removeIssue(flowRequestContext, messageContext, requestParameters.selectedIssue)" />
+        </transition>
+        <transition on="cancel" to="manageNewsletters" bind="false" validate="false"/>
+    </view-state>
+
+    <view-state id="manageSubscriptions">
+        <on-render>
+            <evaluate expression="flowHandler.getNewsletter(flowRequestContext, flowScope.newsletterUUID)" result="requestScope.newsletter"/>
+            <evaluate expression="flowHandler.initCriteria(flowRequestContext)" result="flowScope.searchCriteria"/>
+            <evaluate expression="flowHandler.getSubscriptions(flowScope.newsletterUUID)" result="requestScope.subscriptions"/>
+        </on-render>
+        <transition on="refresh" to="manageSubscriptions" validate="false"/>
+        <transition on="cancel" to="manageNewsletters" bind="false" validate="false"/>
+        <transition on="addSubscribers" to="addSubscribers" validate="false"/>
+        <transition on="bulkAddSubscribers" to="bulkAddSubscribers" validate="false"/>
+
+        <transition on="removeSubscriptions" to="manageSubscriptions" validate="false">
+            <evaluate expression="flowHandler.removeSubscriptions(messageContext, requestParameters.selectedSubscriptions)"/>
+        </transition>
+        <transition on="suspendSubscriptions" to="manageSubscriptions" validate="false">
+            <evaluate expression="flowHandler.suspendSubscriptions(messageContext, requestParameters.selectedSubscriptions)"/>
+        </transition>
+        <transition on="resumeSubscriptions" to="manageSubscriptions" validate="false">
+            <evaluate expression="flowHandler.resumeSubscriptions(messageContext, requestParameters.selectedSubscriptions)"/>
+        </transition>
+    </view-state>
+
+    <view-state id="bulkAddSubscribers" model="csvFileForm">
+        <on-entry>
+            <evaluate expression="flowHandler.initCSVFileForm()" result="flowScope.csvFileForm"/>
+        </on-entry>
+
+        <transition on="cancel" to="manageSubscriptions" bind="false" validate="false"/>
+        <transition on="confirm" to="manageSubscriptions" validate="false">
+            <evaluate expression="flowHandler.bulkSubscribeUsers(flowScope.newsletterUUID, csvFileForm, messageContext)"/>
+        </transition>
+    </view-state>
+
+    <view-state id="addSubscribers" model="searchCriteria">
+        <on-render>
+            <evaluate expression="flowHandler.searchUsers(flowScope.newsletterUUID, searchCriteria)" result="requestScope.users"/>
+            <evaluate expression="flowHandler.providersList" result="requestScope.providersList"/>
+        </on-render>
+        <transition on="cancel" to="manageSubscriptions" validate="false"/>
+        <transition on="search" to="addSubscribers"/>
+
+        <transition on="save" to="manageSubscriptions" validate="false">
+            <evaluate expression="flowHandler.subscribeUsers(flowScope.newsletterUUID, requestParameters.selectedUsers, messageContext)"/>
+        </transition>
+    </view-state>
+
+    <view-state id="formTestIssue" model="formTestIssue">
+        <on-render>
+            <evaluate expression="flowHandler.getIssue(flowRequestContext, flowScope.issueUUID)"
+                      result="requestScope.issue"/>
+            <evaluate expression="flowHandler.initTestIssueForm(flowScope.issueUUID)" result="flowScope.formTestIssue"/>
+        </on-render>
+        <transition on="submit" to="manageIssues">
+            <evaluate expression="flowHandler.testIssue(flowRequestContext, messageContext)" />
+        </transition>
+        <transition on="cancel" to="manageIssues" bind="false" validate="false"/>
+    </view-state>
+
+    <view-state id="formNewsletter">
+        <on-render>
+            <evaluate expression="flowHandler.getNewslettersRootNode(flowRequestContext)" result="requestScope.newslettersRootNode"/>
+        </on-render>
+        <transition on="actionPerformed" to="manageNewsletters">
+            <evaluate expression="flowHandler.setActionMessage(flowRequestContext, messageContext, requestParameters.type, requestParameters.name, requestParameters.model)" />
+        </transition>
+        <transition on="cancel" to="manageNewsletters" bind="false" validate="false"/>
+    </view-state>
+
+    <view-state id="formIssue">
+        <transition on="actionPerformed" to="manageIssues">
+            <evaluate expression="flowHandler.setActionMessage(flowRequestContext, messageContext, requestParameters.type, requestParameters.name, requestParameters.model)" />
+        </transition>
+        <transition on="cancel" to="manageIssues" bind="false" validate="false"/>
+    </view-state>
+</flow>

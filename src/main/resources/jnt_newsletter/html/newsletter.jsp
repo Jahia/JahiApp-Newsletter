@@ -89,10 +89,6 @@
     </tbody>
 </table>
 
-<c:if test="${moduleMap.editable and renderContext.editMode}">
-    <template:module path="*"/>
-</c:if>
-
 <template:include view="hidden.footer"/>
 
 <c:if test="${empty currentNode.properties['j:lastPublished']}">

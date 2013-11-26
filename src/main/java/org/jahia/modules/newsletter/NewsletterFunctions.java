@@ -40,11 +40,13 @@
 
 package org.jahia.modules.newsletter;
 
+import org.jahia.modules.newsletter.service.SubscriptionService;
 import org.jahia.services.SpringContextSingleton;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionFactory;
-import org.jahia.services.notification.SubscriptionService;
 import org.jahia.services.usermanager.JahiaUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 
@@ -56,13 +58,15 @@ import javax.jcr.RepositoryException;
  * To change this template use File | Settings | File Templates.
  */
 public class NewsletterFunctions {
+    private static Logger logger = LoggerFactory.getLogger(NewsletterFunctions.class);
 
     public static boolean hasSubscribed(JCRNodeWrapper target, JahiaUser user) {
-        SubscriptionService service = (SubscriptionService) SpringContextSingleton.getInstance().getContext().getBean("subscriptionService");
+        SpringContextSingleton.getInstance();
+        SubscriptionService service = (SubscriptionService) SpringContextSingleton.getBean("subscriptionService");
         try {
             return service.getSubscription(target.getIdentifier(), user.getUserKey(), JCRSessionFactory.getInstance().getCurrentUserSession("live")) != null;
         } catch (RepositoryException e) {
-            e.printStackTrace();
+            logger.error("Error testing if user: " + user.getUserKey() + " has subscribed to node: " + target.getDisplayableName());
         }
         return false;
     }

@@ -38,18 +38,18 @@
  * please contact the sales department at sales@jahia.com.
  */
 
-package org.jahia.modules.newsletter;
+package org.jahia.modules.newsletter.action;
 
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
 import org.jahia.bin.Jahia;
 import org.jahia.bin.Render;
+import org.jahia.modules.newsletter.service.SubscriptionService;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.mail.MailService;
-import org.jahia.services.notification.SubscriptionService;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
@@ -59,6 +59,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jcr.RepositoryException;
 import javax.script.ScriptException;
@@ -86,7 +87,9 @@ public class SubscribeAction extends Action {
 
 	private String mailConfirmationTemplate = null;
 
+    @Autowired
     private MailService mailService;
+    @Autowired
 	private SubscriptionService subscriptionService;
 
 	public ActionResult doExecute(final HttpServletRequest req, final RenderContext renderContext,
