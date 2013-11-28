@@ -11,7 +11,7 @@
                 <templates j:rootTemplatePath="/base" jcr:primaryType="jnt:templatesFolder">
                     <files jcr:primaryType="jnt:folder"/>
                     <contents jcr:primaryType="jnt:contentFolder"/>
-                    <siteSettingsBase j:view="siteSettings"
+                    <site-settings-base j:view="siteSettings"
                               jcr:mixinTypes="jmix:useUILocale"
                               jcr:primaryType="jnt:template">
                         <newsletterManager j:applyOn="jnt:virtualsite"
@@ -31,7 +31,7 @@
                                 </newsletter-manager>
                             </pagecontent>
                         </newsletterManager>
-                    </siteSettingsBase>
+                    </site-settings-base>
                     <newsletter-confirmation j:hiddenTemplate="false" jcr:primaryType="jnt:pageTemplate">
                         <pagecontent jcr:primaryType="jnt:contentList">
                             <custom-rows-960gs customColumn="16" jcr:primaryType="jnt:customRow"/>
