@@ -15,14 +15,11 @@ Jahia Newsletter Module
   
 * {Deployment}
 
-  This module can be deployed using Jahia Studio to any existing virtual site by selecting the <newsletter>
-  template set in the selector, than using <Deploy templates> menu to select the target virtual site.
-
-[./images/deployment.png]
+  This module can be deployed using Jahia Studio to any existing site
 
 * {Import}
 
-  The Subscription Manager import accepts CSV files (with ',' or ';' as a value separators).
+  The Subscription Manager import accepts CSV files.
   First line is a "header" with fields.
 
   In case of registered users (users, which are present in Jahia) it is just one field - j:nodename - which corresponds
@@ -50,4 +47,32 @@ Jahia Newsletter Module
 
 * {Usage}
 
-  The module usage is shown in the following {{{http://vimeo.com/19176709} screencast}}.
+    * Manage newsletter (site settings)
+
+      You can create/edit and remove newsletter from the newsletters manager in the site settings.
+      You can on a specific newsletter:
+
+        * Manage subscriptions
+
+          On a specific newsletter you can add/remove/suspend or resume subscriptions.
+          WARNING: to be able to add subscribers you have to publish the current newsletter.
+
+        * Manage invoices:
+
+          It's also possible to manage invoice on a specific newsletter,
+          you can add/edit/remove invoices and manage is HTML appearance in Edit mode (a link is provide for each invoice)
+          you can test the invoice for a specific user on a specific email with a specific language
+          you can also send the current invoice to all the subscribers.
+          WARNING: for being able to test and send the invoice you have to publish it.
+
+    * Subscriptions modules
+
+      the newsletter module provide two contents for allow user to subscribe themselves to site newsletters
+
+      * Newsletter subscription
+
+        Allow user to subscribe or unsubscribe to a specific newsletter, you can choose the newsletter in the content configuration.
+
+      * Newsletter subscritpions
+
+        Allow user to subscribe or unsubscribe to all the site newsletters.
