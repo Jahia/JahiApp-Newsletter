@@ -54,10 +54,7 @@ import org.jahia.services.mail.MailService;
 import org.jahia.services.notification.HtmlExternalizationService;
 import org.jahia.services.notification.HttpClientService;
 import org.jahia.services.preferences.user.UserPreferencesHelper;
-import org.jahia.services.render.RenderContext;
-import org.jahia.services.render.RenderException;
-import org.jahia.services.render.RenderService;
-import org.jahia.services.render.Resource;
+import org.jahia.services.render.*;
 import org.jahia.services.sites.JahiaSite;
 import org.jahia.services.sites.JahiaSitesService;
 import org.jahia.services.usermanager.JahiaUser;
@@ -214,6 +211,7 @@ public class NewsletterService {
                     String previousWorkspace = renderContext.getWorkspace();
                     Resource previousResource = renderContext.getMainResource();
                     JCRSiteNode previousSite = renderContext.getSite();
+                    SiteInfo previousSiteInfo = renderContext.getSiteInfo();
                     String previousServletPath = renderContext.getServletPath();
                     HashMap<String, Object> removedAttributes = new HashMap<String, Object>();
 
@@ -225,6 +223,7 @@ public class NewsletterService {
                         Resource resource = new Resource(node, "html", null, "page");
                         renderContext.setMainResource(resource);
                         renderContext.setSite(node.getResolveSite());
+                        renderContext.setSiteInfo(new SiteInfo(node.getResolveSite()));
 
                         // Clear attributes
                         @SuppressWarnings("rawtypes")
@@ -253,6 +252,7 @@ public class NewsletterService {
                         renderContext.setWorkspace(previousWorkspace);
                         renderContext.setMainResource(previousResource);
                         renderContext.setSite(previousSite);
+                        renderContext.setSiteInfo(previousSiteInfo);
                         renderContext.setServletPath(previousServletPath);
                         for (String key : removedAttributes.keySet()){
                             renderContext.getRequest().setAttribute(key, removedAttributes.get(key));
