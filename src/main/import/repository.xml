@@ -3,6 +3,7 @@
     <modules jcr:primaryType="jnt:modules">
         <newsletter j:dependencies="default siteSettings tasks"
                   j:installedModules="newsletter"
+                  j:modulePriority="0"
                   j:moduleType="jahiapp"
                   j:title="JahiApp - Newsletter"
                   jcr:mixinTypes="jmix:accessControlled"
@@ -96,7 +97,7 @@
       </newsletter-subscriptions>
                 <newsletters jcr:primaryType="jnt:newsletters"/>
                 <j:acl jcr:primaryType="jnt:acl"/>
-                <newsletter-subscribe-confirm j:templateName="newsletter-confirmation" jcr:primaryType="jnt:page">
+                <nl-subscribe-confirm j:templateName="newsletter-confirmation" jcr:primaryType="jnt:page">
                     <j:translation_en jcr:language="en"
                               jcr:mixinTypes="mix:title"
                               jcr:primaryType="jnt:translation"
@@ -132,8 +133,8 @@
                                     text="&lt;p&gt;  Thank you! Your subscription has been taken into account.&lt;/p&gt; "/>
                         </rich-text>
                     </custom-rows-960gs-col1>
-                </newsletter-subscribe-confirm>
-                <newsletter-unsubscribe-confirm j:templateName="newsletter-confirmation" jcr:primaryType="jnt:page">
+                </nl-subscribe-confirm>
+                <nl-unsubscribe-confirm j:templateName="newsletter-confirmation" jcr:primaryType="jnt:page">
                     <j:translation_en jcr:language="en"
                               jcr:mixinTypes="mix:title"
                               jcr:primaryType="jnt:translation"
@@ -169,7 +170,7 @@
                                     text="&lt;p&gt;  Votre désabonnement a été pris en compte.&lt;/p&gt; "/>
                         </rich-text>
                     </custom-rows-960gs-col1>
-                </newsletter-unsubscribe-confirm>
+                </nl-unsubscribe-confirm>
     </newsletter>
     </modules>
 </content>

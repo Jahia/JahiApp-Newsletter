@@ -36,8 +36,8 @@
     </bean>
 
     <bean class="org.jahia.modules.newsletter.action.ConfirmAction">
-        <property name="subscriptionConfirmationPagePath" value="${newsletterSubscriptionConfirmationPagePath:/newsletter-subscribe-confirmation}"/>
-        <property name="unsubscriptionConfirmationPagePath" value="${newsletterUnsubscriptionConfirmationPagePath:/newsletter-unsubscribe-confirmation}"/>
+        <property name="subscriptionConfirmationPagePath" value="${newsletterSubscriptionConfirmationPagePath:/nl-subscribe-confirm}"/>
+        <property name="unsubscriptionConfirmationPagePath" value="${newsletterUnsubscriptionConfirmationPagePath:/nl-unsubscribe-confirm}"/>
         <property name="requireAuthenticatedUser" value="${newsletterConfirmationRequireAuthenticatedUser:false}"/>
     </bean>
 </beans>
