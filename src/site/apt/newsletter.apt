@@ -11,8 +11,16 @@ Jahia Newsletter Module
   The module requires a mail server be properly configured and enabled in the
   <Jahia Administration \-\> Server Settings \-\> E\-mail settings>. For details on how to configure
   a mail server in Jahia, please, refer to the corresponding Jahia Knowledge Base
-  {{{http://jira.jahia.org/browse/JKB-20} article}}.  
-  
+  {{{http://jira.jahia.org/browse/JKB-20} article}}.
+
+  To use the scheduling on newlsetter issues, a spring property need to be updated to your environment.
+
++------------
+  <property name="localServerURL" value="${newsletterLocaServerURL:http://127.0.0.1:8080}"/>
+  <!--If your jahia is not deployed in ROOT context please provide contextpath in this URL-->
+  <!--<property name="localServerURL" value="http://127.0.0.1:8080/jahia"/>-->
++------------
+
 * {Deployment}
 
   This module can be deployed using Jahia Studio to any existing site
