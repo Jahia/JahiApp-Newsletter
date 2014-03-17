@@ -41,8 +41,8 @@
                varStatus="status">
         <tr class="${status.count % 2 == 0 ? 'even' : 'odd'}">
             <td align="center">
-                <c:url value="/icons/jnt_newsletterIssue${empty issue.properties['j:scheduled'] ? (empty issue.properties['j:lastSent'] ? '' : 'Sent') : 'Scheduled'}_large.png"
-                       context="${url.currentModule}" var="statusImage"/>
+                <c:url value="${url.currentModule}/icons/jnt_newsletterIssue${empty issue.properties['j:scheduled'] ? (empty issue.properties['j:lastSent'] ? '' : 'Sent') : 'Scheduled'}_large.png"
+                       var="statusImage"/>
                 <img src="${statusImage}" height="48" width="48" alt=" "/>
             </td>
             <td>
