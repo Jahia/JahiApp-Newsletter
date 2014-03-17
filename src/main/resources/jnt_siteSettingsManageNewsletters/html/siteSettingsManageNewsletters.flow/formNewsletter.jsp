@@ -24,6 +24,7 @@
 <template:addResources type="javascript" resources="jquery.min.js,jquery.form.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
 <template:addResources type="css" resources="admin-bootstrap.css"/>
 <template:addResources type="css" resources="jquery-ui.smoothness.css,jquery-ui.smoothness-jahia.css"/>
+<template:addResources type="css" resources="newsletter-settings.css"/>
 
 <fmt:message var="i18nNameMandatory" key="newsletter.errors.name.mandatory"/><c:set var="i18nNameMandatory" value="${fn:escapeXml(i18nNameMandatory)}"/>
 <fmt:message var="i18nSubscriptionPageMandatory" key="newsletter.errors.subscriptionPage.mandatory"/><c:set var="i18nSubscriptionPageMandatory" value="${fn:escapeXml(i18nSubscriptionPageMandatory)}"/>
@@ -140,28 +141,30 @@
             <fieldset>
                 <div class="container-fluid">
                     <div class="row-fluid">
-                        <div class="span4">
+                        <div class="span12">
                             <c:set var="newsletterName" value="${isUpdate ? newsletter.displayableName : ''}"/>
                             <label for="newsletterName"><fmt:message key="label.name"/> <span class="text-error"><strong>*</strong></span></label>
-                            <input type="text" name="jcr:title" class="span12" id="newsletterName" value="${fn:escapeXml(newsletterName)}"/>
+                            <input type="text" name="jcr:title" id="newsletterName" value="${fn:escapeXml(newsletterName)}"/>
                         </div>
                     </div>
                     <div class="row-fluid">
-                        <div class="span4">
+                        <div class="span12">
                             <c:set var="newsletterIsPublic" value="${isUpdate ? newsletter.properties['j:allowUnregisteredUsers'].boolean : true}"/>
                             <label for="newsletterIsPublic"><fmt:message key="jmix_subscribable.j_allowUnregisteredUsers"/></label>
                             <input type="checkbox" id="newsletterIsPublic" ${newsletterIsPublic ? 'checked="checked"' : ''}/>
                         </div>
                     </div>
                     <div class="row-fluid">
-                        <div class="span4">
+                        <div class="span12">
                             <c:if test="${isUpdate}">
                                 <jcr:node var="subscriptionPage" uuid="${newsletter.properties['j:subscriptionPage'].string}"/>
                             </c:if>
                             <label for="newsletterSubscriptionPage"><fmt:message key="jnt_newsletter.j_subscriptionPage"/> <span class="text-error"><strong>*</strong></span></label>
                             <input type="hidden" id="newsletterSubscriptionPage" name="j:subscriptionPage" value="${isUpdate ? subscriptionPage.identifier : ''}"/>
-                            <input type="text" id="newsletterSubscriptionPageDecoy" value="${isUpdate ? subscriptionPage.displayableName : ''}"/>
-                            <ui:pageSelector fieldId="newsletterSubscriptionPage" displayFieldId="newsletterSubscriptionPageDecoy" displayIncludeChildren="false" valueType="identifier"/>
+                            <input type="text" id="newsletterSubscriptionPageDecoy" class="left" value="${isUpdate ? subscriptionPage.displayableName : ''}"/>
+                            <div class="left picker">
+                                <ui:pageSelector fieldId="newsletterSubscriptionPage" displayFieldId="newsletterSubscriptionPageDecoy" displayIncludeChildren="false" valueType="identifier"/>
+                            </div>
                         </div>
                     </div>
 
