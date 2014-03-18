@@ -22,6 +22,9 @@
         <transition on="removeNewsletter" to="manageNewsletters" bind="false" validate="false">
             <evaluate expression="flowHandler.removeNewsletter(flowRequestContext, messageContext, requestParameters.selectedNewsletter)" />
         </transition>
+        <transition on="publishNewsletter" to="manageNewsletters" bind="false" validate="false">
+            <evaluate expression="flowHandler.publishNewsletter(flowRequestContext, messageContext, requestParameters.selectedNewsletter)" />
+        </transition>
         <transition on="manageIssues" to="manageIssues" bind="false" validate="false">
             <set name="flowScope.newsletterUUID" value="requestParameters.selectedNewsletter" type="java.lang.String" />
         </transition>
@@ -47,6 +50,9 @@
         </transition>
         <transition on="removeIssue" to="manageIssues" bind="false" validate="false">
             <evaluate expression="flowHandler.removeIssue(flowRequestContext, messageContext, requestParameters.selectedIssue)" />
+        </transition>
+        <transition on="publishIssue" to="manageIssues" bind="false" validate="false">
+            <evaluate expression="flowHandler.publishIssue(flowRequestContext, messageContext, requestParameters.selectedIssue)" />
         </transition>
         <transition on="cancel" to="manageNewsletters" bind="false" validate="false"/>
     </view-state>

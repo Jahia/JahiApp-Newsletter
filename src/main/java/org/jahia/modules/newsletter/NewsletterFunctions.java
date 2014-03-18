@@ -70,5 +70,4 @@ public class NewsletterFunctions {
         }
         return false;
     }
-
 }

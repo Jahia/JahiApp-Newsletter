@@ -40,6 +40,7 @@
 
 package org.jahia.modules.newsletter.sitesettings;
 
+import org.jahia.api.Constants;
 import org.jahia.data.viewhelper.principal.PrincipalViewHelper;
 import org.jahia.modules.newsletter.service.NewsletterService;
 import org.jahia.modules.newsletter.service.SubscriptionService;
@@ -47,6 +48,7 @@ import org.jahia.modules.newsletter.service.model.Subscription;
 import org.jahia.modules.newsletter.sitesettings.form.CSVFileForm;
 import org.jahia.modules.newsletter.sitesettings.form.TestNewsletterIssueForm;
 import org.jahia.services.content.JCRNodeWrapper;
+import org.jahia.services.content.JCRPublicationService;
 import org.jahia.services.content.JCRSessionFactory;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.decorator.JCRSiteNode;
@@ -174,6 +176,49 @@ public class ManageNewsletterFlowHandler implements Serializable {
         boolean issueRemoved = removeNode(issueToRemove);
         setActionMessage(msgCtx, issueRemoved, "newsletter.issue", "removed", name);
         return issueRemoved;
+    }
+
+    public boolean publishNewsletter(RequestContext ctx, MessageContext msgCtx, String selectedNewsletter) {
+        JCRNodeWrapper newsletterToPublish = getNodeByUUID(selectedNewsletter, getCurrentUserSession(ctx));
+        return publishItem(newsletterToPublish, msgCtx, "newsletter");
+    }
+
+    public boolean publishIssue(RequestContext ctx, MessageContext msgCtx, String selectedIssue) {
+        JCRNodeWrapper issueToPublish = getNodeByUUID(selectedIssue, getCurrentUserSession(ctx));
+        return publishItem(issueToPublish, msgCtx, "newsletter.issue");
+    }
+
+    private boolean publishItem(JCRNodeWrapper nodeWrapper, MessageContext msgCtx, String itemKey){
+        boolean published = false;
+        JCRPublicationService publicationService = JCRPublicationService.getInstance();
+        String name = nodeWrapper.getDisplayableName();
+        if(publicationService != null){
+            try {
+                publicationService.publish(Collections.singletonList(nodeWrapper.getIdentifier()),
+                        nodeWrapper.getSession().getWorkspace().getName(),
+                        Constants.LIVE_WORKSPACE, Collections.singletonList(""));
+
+                //in case of newsletter publish j:subscriptions sub node
+                if(nodeWrapper.isNodeType("jnt:newsletter")){
+                    JCRNodeWrapper subscriptionsNode = nodeWrapper.getNode("j:subscriptions");
+                    if(!subscriptionsNode.hasProperty("j:lastPublished")){
+                        publicationService.publish(Collections.singletonList(subscriptionsNode.getIdentifier()),
+                                nodeWrapper.getSession().getWorkspace().getName(),
+                                Constants.LIVE_WORKSPACE, Collections.singletonList(""));
+                    }
+                }
+
+                setActionMessage(msgCtx, true, itemKey, "published", name);
+                published = true;
+            } catch (RepositoryException e) {
+                logger.error(e.getMessage(), e);
+                setActionMessage(msgCtx, false, itemKey, "published", name);
+            }
+        }else {
+            setActionMessage(msgCtx, false, itemKey, "published", name);
+        }
+
+        return published;
     }
 
     /* Subscriptions */

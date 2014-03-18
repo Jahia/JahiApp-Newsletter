@@ -6,6 +6,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions" %>
 <%@ taglib prefix="user" uri="http://www.jahia.org/tags/user" %>
+<%@ taglib prefix="newsletter" uri="http://www.jahia.org/tags/newsletter" %>
 <%--@elvariable id="currentNode" type="org.jahia.services.content.JCRNodeWrapper"--%>
 <%--@elvariable id="out" type="java.io.PrintWriter"--%>
 <%--@elvariable id="script" type="org.jahia.services.render.scripting.Script"--%>
@@ -40,6 +41,7 @@
     <fmt:message key="newsletter.issue.manage">
         <fmt:param value="${fn:escapeXml(newsletter.displayableName)}"/>
     </fmt:message>
+
 </h2>
 
 <form action="${flowExecutionUrl}" method="post" style="display: inline;" id="issueForm">
@@ -81,6 +83,7 @@
         <c:set var="issuesCount" value="${fn:length(issues)}"/>
         <c:set var="issuesFound" value="${issuesCount > 0}"/>
 
+
         <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>
@@ -90,7 +93,7 @@
                 <th><fmt:message key="newsletter.issue.lastModified"/></th>
                 <th><fmt:message key="newsletter.issue.lastSent"/></th>
                 <th><fmt:message key="newsletter.issue.scheduled"/></th>
-                <th width="20%"><fmt:message key="label.actions"/></th>
+                <th width="25%"><fmt:message key="label.actions"/></th>
             </tr>
             </thead>
             <tbody>
@@ -110,7 +113,13 @@
                     <fmt:message var="i18nEditMode" key="newsletter.issue.goToEditMode"/><c:set var="i18nEditMode" value="${functions:escapeJavaScript(i18nEditMode)}"/>
                     <fmt:message var="i18nTest" key="newsletter.issue.test"/><c:set var="i18nTest" value="${functions:escapeJavaScript(i18nTest)}"/>
                     <fmt:message var="i18nSend" key="newsletter.issue.send"/><c:set var="i18nSend" value="${functions:escapeJavaScript(i18nSend)}"/>
+                    <fmt:message var="i18nPublish" key="newsletter.issue.publish"/><c:set var="i18nPublish" value="${functions:escapeJavaScript(i18nPublish)}"/>
+                    <fmt:message var="i18nNeedPublish" key="newsletter.issue.needPublish"/><c:set var="i18nNeedPublish" value="${functions:escapeJavaScript(i18nNeedPublish)}"/>
+
                     <c:forEach items="${issues}" var="issue" varStatus="loopStatus">
+                        <c:set var="hasPublication" value="${not empty issue.properties['j:lastPublished']}"/>
+                        <c:set var="needPublication" value="${jcr:needPublication(issue, renderContext.mainResourceLocale.language, false, false, false)}"/>
+
                         <c:url var="issueEditModeURL" value="${url.baseEdit}${issue.path}.html"/>
                         <tr>
                             <td>${loopStatus.count}</td>
@@ -131,43 +140,60 @@
                                                 pattern="yyyy-MM-dd HH:mm"/>
                             </td>
                             <td>
-                                <c:if test="${not empty issue.properties['j:lastPublished']}">
-                                    <c:choose>
-                                        <c:when test="${not empty issue.properties['j:scheduled']}">
-                                            <fmt:formatDate value="${issue.properties['j:scheduled'].date.time}"
-                                                            pattern="yyyy-MM-dd HH:mm"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <fmt:message key="label.issueNotScheduled"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:if>
-                                <c:if test="${empty issue.properties['j:lastPublished']}">
-                                    <fmt:message key="label.issueNotPublished"/>
-                                </c:if>
+                                <c:choose>
+                                    <c:when test="${hasPublication}">
+                                        <c:choose>
+                                            <c:when test="${not empty issue.properties['j:scheduled']}">
+                                                <fmt:formatDate value="${issue.properties['j:scheduled'].date.time}"
+                                                                pattern="yyyy-MM-dd HH:mm"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <fmt:message key="label.issueNotScheduled"/>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <fmt:message key="label.issueNotPublished"/>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                             <td>
                                 <a style="margin-bottom:0;" class="btn btn-small" title="${i18nEditMode}" href="${issueEditModeURL}">
                                     <i class="icon-pencil"></i>
                                 </a>
 
-
                                 <a style="margin-bottom:0;" class="btn btn-small" title="${i18nEdit}" href="#edit" onclick="submitIssueForm('editIssue', '${issue.identifier}')">
                                     <i class="icon-edit"></i>
                                 </a>
 
-                                <c:if test="${not empty issue.properties['j:lastPublished']}">
-                                    <a style="margin-bottom:0;" class="btn btn-small" title="${i18nTest}" href="#test" onclick="submitIssueForm('testIssue', '${issue.identifier}')">
-                                        <i class="icon-check"></i>
-                                    </a>
+                                <c:choose>
+                                    <c:when test="${hasPublication}">
+                                        <a style="margin-bottom:0;" class="btn btn-small" title="${i18nTest}" href="#test" onclick="submitIssueForm('testIssue', '${issue.identifier}')">
+                                            <i class="icon-check"></i>
+                                        </a>
 
-                                    <a style="margin-bottom:0;" class="btn btn-small" title="${i18nSend}" href="#send" onclick="if (confirm('${i18nSendConfirm}')) { submitIssueForm('sendIssue', '${issue.identifier}');} return false;">
-                                        <i class="icon-share"></i>
-                                    </a>
-                                </c:if>
+                                        <a style="margin-bottom:0;" class="btn btn-small" title="${i18nSend}" href="#send" onclick="if (confirm('${i18nSendConfirm}')) { submitIssueForm('sendIssue', '${issue.identifier}');} return false;">
+                                            <i class="icon-share"></i>
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a style="margin-bottom:0;" class="btn btn-small disabled" title="${i18nTest} - ${i18nNeedPublish}" href="#test" onclick="return false;">
+                                            <i class="icon-check"></i>
+                                        </a>
+
+                                        <a style="margin-bottom:0;" class="btn btn-small disabled" title="${i18nSend} - ${i18nNeedPublish}" href="#send" onclick="return false;">
+                                            <i class="icon-share"></i>
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
                                 <a style="margin-bottom:0;" class="btn btn-danger btn-small" title="${i18nRemove}" href="#delete" onclick="if (confirm('${i18nRemoveConfirm}')) { submitIssueForm('removeIssue', '${issue.identifier}');} return false;">
                                     <i class="icon-remove icon-white"></i>
                                 </a>
+                                <c:if test="${needPublication}">
+                                    <a style="margin-bottom:0;" class="btn btn-success btn-small" title="${i18nPublish}" href="#publish" onclick="submitIssueForm('publishIssue', '${issue.identifier}')">
+                                        <i class="icon-white icon-globe"></i>${i18nPublish}
+                                    </a>
+                                </c:if>
                             </td>
                         </tr>
                     </c:forEach>

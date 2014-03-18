@@ -98,7 +98,13 @@
                     <fmt:message var="i18nEdit" key="label.edit"/><c:set var="i18nEdit" value="${functions:escapeJavaScript(i18nEdit)}"/>
                     <fmt:message var="i18nSubscriptions" key="newsletter.subscriptions.label"/><c:set var="i18nSubscriptions" value="${functions:escapeJavaScript(i18nSubscriptions)}"/>
                     <fmt:message var="i18nIssues" key="newsletter.issues"/><c:set var="i18nIssues" value="${functions:escapeJavaScript(i18nIssues)}"/>
+                    <fmt:message var="i18nPublish" key="newsletter.issue.publish"/><c:set var="i18nPublish" value="${functions:escapeJavaScript(i18nPublish)}"/>
+                    <fmt:message var="i18nNeedPublish" key="newsletter.needPublish"/><c:set var="i18nNeedPublish" value="${functions:escapeJavaScript(i18nNeedPublish)}"/>
+
                     <c:forEach items="${newsletters}" var="newsletter" varStatus="loopStatus">
+                        <c:set var="hasPublication" value="${not empty newsletter.properties['j:lastPublished']}"/>
+                        <c:set var="needPublication" value="${jcr:needPublication(newsletter, renderContext.mainResourceLocale.language, false, false, false)}"/>
+
                         <tr>
                             <td>${loopStatus.count}</td>
                             <td>
@@ -122,13 +128,28 @@
                                     <i class="icon-envelope"></i>
                                 </a>
 
-                                <a style="margin-bottom:0;" class="btn btn-small" title="${i18nSubscriptions}" href="#subscriptions" onclick="submitNewsletterForm('manageSubscriptions', '${newsletter.identifier}')">
-                                    <i class="icon-user"></i>
-                                </a>
+                                <c:choose>
+                                    <c:when test="${hasPublication}">
+                                        <a style="margin-bottom:0;" class="btn btn-small" title="${i18nSubscriptions}" href="#subscriptions" onclick="submitNewsletterForm('manageSubscriptions', '${newsletter.identifier}')">
+                                            <i class="icon-user"></i>
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a style="margin-bottom:0;" class="btn btn-small disabled" title="${i18nSubscriptions} - ${i18nNeedPublish}" href="#subscriptions" onclick="return false;">
+                                            <i class="icon-user"></i>
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
 
                                 <a style="margin-bottom:0;" class="btn btn-danger btn-small" title="${i18nRemove}" href="#delete" onclick="if (confirm('${i18nRemoveConfirm}')) { submitNewsletterForm('removeNewsletter', '${newsletter.identifier}');} return false;">
                                     <i class="icon-remove icon-white"></i>
                                 </a>
+
+                                <c:if test="${needPublication}">
+                                    <a style="margin-bottom:0;" class="btn btn-success btn-small" title="${i18nPublish}" href="#publish" onclick="submitNewsletterForm('publishNewsletter', '${newsletter.identifier}')">
+                                        <i class="icon-white icon-globe"></i>${i18nPublish}
+                                    </a>
+                                </c:if>
                             </td>
                         </tr>
                     </c:forEach>
