@@ -319,8 +319,17 @@ public class ManageNewsletterFlowHandler implements Serializable {
 
     private boolean removeNode(JCRNodeWrapper node) {
         try {
+            JCRNodeWrapper parentNode = node.getParent();
             node.remove();
             node.getSession().save();
+
+            JCRPublicationService publicationService = JCRPublicationService.getInstance();
+            if(publicationService != null){
+                publicationService.publish(Collections.singletonList(parentNode.getIdentifier()),
+                        node.getSession().getWorkspace().getName(),
+                        Constants.LIVE_WORKSPACE, Collections.singletonList(""));
+            }
+            
             return true;
         } catch (RepositoryException e) {
             logger.error("Error removing node " + node.getDisplayableName(), e);
