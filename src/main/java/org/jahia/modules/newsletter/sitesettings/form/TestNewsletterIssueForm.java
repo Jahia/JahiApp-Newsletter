@@ -40,6 +40,10 @@
 
 package org.jahia.modules.newsletter.sitesettings.form;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.jahia.modules.newsletter.sitesettings.constraint.JahiaUser;
+
 import java.io.Serializable;
 
 /**
@@ -53,7 +57,11 @@ public class TestNewsletterIssueForm implements Serializable{
 
     private static final long serialVersionUID = -372924372635884450L;
     private String issueUUID;
+    @NotEmpty
+    @Email
     private String testmail;
+    @NotEmpty
+    @JahiaUser
     private String user;
     private String locale;
 

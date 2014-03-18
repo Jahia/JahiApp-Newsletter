@@ -20,9 +20,50 @@
 <%--@elvariable id="flowExecutionUrl" type="java.lang.String"--%>
 <%--@elvariable id="issue" type="org.jahia.services.content.JCRNodeWrapper"--%>
 
-<c:set var="site" value="${renderContext.mainResource.node.resolveSite}"/>
+<template:addResources type="javascript" resources="jquery.min.js"/>
+<template:addResources type="css" resources="jquery.autocomplete.css"/>
+<template:addResources type="javascript" resources="jquery.autocomplete.js"/>
 
-<h2><fmt:message key="newsletter.issue.test"/> - ${fn:escapeXml(issue.displayableName)}</h2>
+<c:set var="site" value="${renderContext.mainResource.node.resolveSite}"/>
+<c:url value='${url.find}'/>
+<script type="text/javascript">
+    $(document).ready(function() {
+        function getUserDisplayName(node) {
+            var value = node['j:firstName'] || '';
+            if (value.length != 0) {
+                value += ' ';
+            }
+            value += node['j:lastName'] || '';
+            var title = value.length > 0 ? value : node['username'];
+            var username = node['username'];
+            return username != title ? title + " (" + username + ")" : username;
+        }
+
+        $("#user").autocomplete("<c:url value='${url.findUser}' />", {
+            dataType: "json",
+            cacheLength: 1,
+            parse: function (data) {
+                return $.map(data, function(row) {
+                    return {
+                        data: row,
+                        value: row['username'],
+                        result: getUserDisplayName(row)
+                    }
+                });
+            },
+            formatItem: function(item) {
+                return getUserDisplayName(item);
+            }
+        }).result(function(event, item, formatted) {
+            if (!item) {
+                return;
+            }
+            $('#assignee_hidden').val(item['username'])
+        });
+    });
+</script>
+
+<h2><fmt:message key="newsletter.issue.test"/> fdfd- ${fn:escapeXml(issue.displayableName)}</h2>
 
 <c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
     <div class="${msg.severity == 'ERROR' ? 'validationError' : ''} alert ${msg.severity == 'ERROR' ? 'alert-error' : 'alert-success'}">
@@ -36,9 +77,9 @@
 
         <div class="row-fluid">
             <div class="span4">
-                <label for="testmail"><fmt:message key="label.email"/></label>
+                <label for="testmail"><fmt:message key="label.email"/> <span class="text-error"><strong>*</strong></span></label>
                 <form:input class="span12" type="text" id="testmail" path="testmail"/>
-                <label for="user"><fmt:message key="label.user"/></label>
+                <label for="user"><fmt:message key="label.user"/> <span class="text-error"><strong>*</strong></span></label>
                 <form:input class="span12" type="text" id="user" path="user"/>
             </div>
         </div>
