@@ -93,7 +93,7 @@
                         <newsletters-subscriptions j:fields="j:firstName" jcr:primaryType="jnt:newslettersSubscriptions"/>
         </pagecontent>
         <custom-rows-960gs-col1 jcr:primaryType="jnt:contentList">
-          <newsletter-subscriptions j:fields="" jcr:primaryType="jnt:newslettersSubscriptions">
+                        <newsletter-subscriptions jcr:primaryType="jnt:newslettersSubscriptions">
                             <j:translation_en jcr:language="en"
                                     jcr:mixinTypes="mix:title"
                                     jcr:primaryType="jnt:translation"
