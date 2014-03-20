@@ -25,7 +25,6 @@
 <template:addResources type="javascript" resources="jquery.autocomplete.js"/>
 
 <c:set var="site" value="${renderContext.mainResource.node.resolveSite}"/>
-<c:url value='${url.find}'/>
 <script type="text/javascript">
     $(document).ready(function() {
         function getUserDisplayName(node) {
