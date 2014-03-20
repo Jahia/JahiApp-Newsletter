@@ -30,22 +30,32 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $(':checkbox[name="selectedUsers"]').click(function() {
-            if (!this.checked) {
-                $('#cbSelectedAllUsers').checked = false;
-            }
-
+        function activeSaveButton(){
             if($(':checkbox[name="selectedUsers"]:checked').length > 0){
                 $("#saveButton").removeAttr("disabled");
             }else {
                 $("#saveButton").attr("disabled", "disabled");
             }
+        }
+
+        $(':checkbox[name="selectedUsers"]').click(function() {
+            if (!this.checked) {
+                $('#cbSelectedAllUsers').prop('checked', false);
+            }else {
+                if($(':checkbox[name="selectedUsers"]:checked').length == $(':checkbox[name="selectedUsers"]').length){
+                    $('#cbSelectedAllUsers').prop('checked', true);
+                }
+            }
+
+            activeSaveButton();
         });
         $('#cbSelectedAllUsers').click(function() {
             var state = this.checked;
             $.each($(':checkbox[name="selectedUsers"]'), function() {
                 this.checked=state;
             });
+
+            activeSaveButton();
         });
     })
 </script>
