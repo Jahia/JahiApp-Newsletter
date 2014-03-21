@@ -6,7 +6,7 @@
                   j:modulePriority="0"
                   j:moduleType="jahiapp"
                   j:title="JahiApp - Newsletter"
-                  jcr:mixinTypes="jmix:accessControlled"
+                  jcr:mixinTypes="jmix:accessControlled jmix:hasExternalProviderExtension"
                   jcr:primaryType="jnt:module">
                 
                 <portlets jcr:primaryType="jnt:portletFolder"/>
