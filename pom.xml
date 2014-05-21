@@ -124,7 +124,7 @@
           <instructions>
             <Export-Package>org.jahia.modules.newsletter</Export-Package>
             <Jahia-Module-Type>jahiapp</Jahia-Module-Type>
-            <Jahia-Depends>default,siteSettings,tasks</Jahia-Depends>
+            <Jahia-Depends>default,siteSettings,tasks,grid</Jahia-Depends>
             <Import-Package>${jahia.plugin.projectPackageImport},
                   *</Import-Package>
           </instructions>
