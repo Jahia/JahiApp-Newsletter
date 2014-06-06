@@ -76,10 +76,7 @@ import org.jahia.modules.newsletter.service.SubscriptionService;
 import org.jahia.modules.newsletter.service.model.Subscription;
 import org.jahia.modules.newsletter.sitesettings.form.CSVFileForm;
 import org.jahia.modules.newsletter.sitesettings.form.TestNewsletterIssueForm;
-import org.jahia.services.content.JCRNodeWrapper;
-import org.jahia.services.content.JCRPublicationService;
-import org.jahia.services.content.JCRSessionFactory;
-import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.*;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.usermanager.JahiaUser;
@@ -251,26 +248,49 @@ public class ManageNewsletterFlowHandler implements Serializable {
     }
 
     /* Subscriptions */
-    public PaginatedList<Subscription> getSubscriptions(String selectedNewsletter) {
-        JCRSessionWrapper session = getCurrentUserSession("live");
-        return subscriptionService.getSubscriptions(selectedNewsletter, null, false, 0, Integer.MAX_VALUE, session);
+    public PaginatedList<Subscription> getSubscriptions(final String selectedNewsletter) throws RepositoryException {
+        JCRSessionWrapper sessionWrapper = getCurrentUserSession("live");
+        return JCRTemplate.getInstance().doExecuteWithSystemSession(sessionWrapper.getUser().getUsername(), "live", sessionWrapper.getLocale(), new JCRCallback<PaginatedList<Subscription>>() {
+            @Override
+            public PaginatedList<Subscription> doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                return subscriptionService.getSubscriptions(selectedNewsletter, null, false, 0, Integer.MAX_VALUE, session);
+            }
+        });
     }
 
-    public void removeSubscriptions(MessageContext msgCtx, String[] subscriptions){
-        JCRSessionWrapper session = getCurrentUserSession("live");
-        subscriptionService.cancel(Arrays.asList(subscriptions), session);
+    public void removeSubscriptions(MessageContext msgCtx, final String[] subscriptions) throws RepositoryException {
+        JCRSessionWrapper sessionWrapper = getCurrentUserSession("live");
+        JCRTemplate.getInstance().doExecuteWithSystemSession(sessionWrapper.getUser().getUsername(), "live", sessionWrapper.getLocale(), new JCRCallback<Object>() {
+            @Override
+            public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                subscriptionService.cancel(Arrays.asList(subscriptions), session);
+                return null;
+            }
+        });
         setActionMessage(msgCtx, true, "newsletter.subscription", "removed", subscriptions.length);
     }
 
-    public void suspendSubscriptions(MessageContext msgCtx, String[] subscriptions){
-        JCRSessionWrapper session = getCurrentUserSession("live");
-        subscriptionService.suspend(Arrays.asList(subscriptions), session);
+    public void suspendSubscriptions(MessageContext msgCtx, final String[] subscriptions) throws RepositoryException {
+        JCRSessionWrapper sessionWrapper = getCurrentUserSession("live");
+        JCRTemplate.getInstance().doExecuteWithSystemSession(sessionWrapper.getUser().getUsername(), "live", sessionWrapper.getLocale(), new JCRCallback<Object>() {
+            @Override
+            public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                subscriptionService.suspend(Arrays.asList(subscriptions), session);
+                return null;
+            }
+        });
         setActionMessage(msgCtx, true, "newsletter.subscription", "suspended", subscriptions.length);
     }
 
-    public void resumeSubscriptions(MessageContext msgCtx, String[] subscriptions){
-        JCRSessionWrapper session = getCurrentUserSession("live");
-        subscriptionService.resume(Arrays.asList(subscriptions), session);
+    public void resumeSubscriptions(MessageContext msgCtx, final String[] subscriptions) throws RepositoryException {
+        JCRSessionWrapper sessionWrapper = getCurrentUserSession("live");
+        JCRTemplate.getInstance().doExecuteWithSystemSession(sessionWrapper.getUser().getUsername(), "live", sessionWrapper.getLocale(), new JCRCallback<Object>() {
+            @Override
+            public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                subscriptionService.resume(Arrays.asList(subscriptions), session);
+                return null;
+            }
+        });
         setActionMessage(msgCtx, true, "newsletter.subscription", "resumed", subscriptions.length);
     }
 
@@ -305,13 +325,27 @@ public class ManageNewsletterFlowHandler implements Serializable {
         return notSubscribeUsers;
     }
 
-    public void subscribeUsers(String newsletterUUID, String[] users, MessageContext msgCtx){
-        subscriptionService.subscribe(newsletterUUID, Arrays.asList(users), getCurrentUserSession("live"));
+    public void subscribeUsers(final String newsletterUUID, final String[] users, final MessageContext msgCtx) throws RepositoryException {
+        JCRSessionWrapper sessionWrapper = getCurrentUserSession("live");
+        JCRTemplate.getInstance().doExecuteWithSystemSession(sessionWrapper.getUser().getUsername(), "live", sessionWrapper.getLocale(), new JCRCallback<Object>() {
+            @Override
+            public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                subscriptionService.subscribe(newsletterUUID, Arrays.asList(users), session);
+                return null;
+            }
+        });
         setActionMessage(msgCtx, true, "newsletter.subscription", "created", users.length);
     }
 
-    public void bulkSubscribeUsers(String newsletterUUID, CSVFileForm csvFileForm, MessageContext msgCtx){
-        subscriptionService.importSubscriptions(newsletterUUID, csvFileForm.getCsvFile(), getCurrentUserSession("live"), csvFileForm.getCsvSeparator().charAt(0));
+    public void bulkSubscribeUsers(final String newsletterUUID, final CSVFileForm csvFileForm, MessageContext msgCtx) throws RepositoryException {
+        JCRSessionWrapper sessionWrapper = getCurrentUserSession("live");
+        JCRTemplate.getInstance().doExecuteWithSystemSession(sessionWrapper.getUser().getUsername(), "live", sessionWrapper.getLocale(), new JCRCallback<Object>() {
+            @Override
+            public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                subscriptionService.importSubscriptions(newsletterUUID, csvFileForm.getCsvFile(), session, csvFileForm.getCsvSeparator().charAt(0));
+                return null;
+            }
+        });
         setActionMessage(msgCtx, true, "newsletter.subscription", "imported", null);
     }
 
