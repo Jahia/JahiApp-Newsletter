@@ -72,7 +72,16 @@
             <url>http://maven.jahia.org/maven2</url>
         </repository>
     </repositories>
-
+    <distributionManagement>
+        <repository>
+            <id>jahia-releases</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/jahia-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>jahia-snapshots</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/jahia-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
     <build>
         <plugins>
             <plugin>
@@ -123,7 +132,18 @@
 	                </archive>
 	                <archiveClasses>true</archiveClasses>
                 </configuration>
-            </plugin>
+            </plugin>            
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <nexusUrl>https://devtools.jahia.com/nexus/</nexusUrl>
+                    <serverId>staging-repository</serverId>
+                    <stagingProfileId>64277f72646358</stagingProfileId>
+                </configuration>
+            </plugin> 
         </plugins>
     </build>
     <profiles>
