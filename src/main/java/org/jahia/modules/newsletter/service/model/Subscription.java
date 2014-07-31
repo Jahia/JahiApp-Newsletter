@@ -98,12 +98,14 @@ public class Subscription implements Serializable {
 
 	private String lastName;
 
-	private String provider;
+    private String name;
 
 	private String subscriber;
 
 	private boolean suspended;
-	
+
+    private boolean registeredUser;
+
 	private Map<String, String> properties = new HashMap<String, String>(1);
 
 	@Override
@@ -143,10 +145,6 @@ public class Subscription implements Serializable {
 		return lastName;
 	}
 
-	public String getProvider() {
-		return provider;
-	}
-
 	public String getSubscriber() {
 		return subscriber;
 	}
@@ -164,14 +162,22 @@ public class Subscription implements Serializable {
 	}
 
 	public boolean isRegisteredUser() {
-		return getProvider() != null;
+		return registeredUser;
 	}
 
 	public boolean isSuspended() {
 		return suspended;
 	}
 
-	public void setConfirmationKey(String confirmationKey) {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setConfirmationKey(String confirmationKey) {
 		this.confirmationKey = confirmationKey;
 	}
 
@@ -195,10 +201,6 @@ public class Subscription implements Serializable {
 		this.lastName = lastName;
 	}
 
-	public void setProvider(String provider) {
-		this.provider = provider;
-	}
-
 	public void setSubscriber(String subscriber) {
 		this.subscriber = subscriber;
 	}
@@ -207,7 +209,11 @@ public class Subscription implements Serializable {
 		this.suspended = suspended;
 	}
 
-	@Override
+    public void setRegisteredUser(boolean registeredUser) {
+        this.registeredUser = registeredUser;
+    }
+
+    @Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}

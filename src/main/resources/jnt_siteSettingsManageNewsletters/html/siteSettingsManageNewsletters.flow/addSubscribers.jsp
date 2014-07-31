@@ -18,7 +18,7 @@
 <%--@elvariable id="flowRequestContext" type="org.springframework.webflow.execution.RequestContext"--%>
 <%--@elvariable id="flowExecutionUrl" type="java.lang.String"--%>
 <%--@elvariable id="searchCriteria" type="org.jahia.services.usermanager.SearchCriteria"--%>
-<%--@elvariable id="users" type="java.util.Set<org.jahia.services.usermanager.JahiaUser>"--%>
+<%--@elvariable id="users" type="java.util.Set<org.jahia.services.content.decorator.JCRUserNode>"--%>
 
 <template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
 <template:addResources type="css" resources="admin-bootstrap.css,jquery-ui.smoothness.css,jquery-ui.smoothness-jahia.css"/>
@@ -26,7 +26,6 @@
 <c:set var="usersFound" value="${usersCount > 0}"/>
 
 <c:set var="memberDisplayLimit" value="${newsletterProperties.memberDisplayLimit}"/>
-<c:set var="multipleProvidersAvailable" value="${fn:length(providersList) > 1}"/>
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -87,31 +86,6 @@
                     &nbsp;<fmt:message key='label.search'/>
                 </button>
             </div>
-            <c:if test="${multipleProvidersAvailable}">
-                <br/>
-                <label for="storedOn"><span class="badge badge-info"><fmt:message key="label.on"/></span></label>
-                <%--@elvariable id="providersList" type="java.util.List"--%>
-                <input type="radio" name="storedOn" id="storeOnEverywhere" value="everywhere"
-                       <c:if test="${empty searchCriteria.storedOn or searchCriteria.storedOn eq 'everywhere'}">checked</c:if>
-                       onclick="$('.provCheck').attr('disabled',true);">&nbsp;<label for="storeOnEverywhere"><fmt:message
-                    key="label.everyWhere"/></label>
-
-                <input type="radio" id="storedOn" name="storedOn" value="providers"
-                <c:if test="${searchCriteria.storedOn eq 'providers'}">
-                       checked </c:if>
-                       onclick="$('.provCheck').removeAttr('disabled');">&nbsp;<label for="storedOn"><fmt:message key="label.providers"/></label>:&nbsp;
-
-                <c:forEach items="${providersList}" var="curProvider">
-                    <input type="checkbox" class="provCheck" name="providers" id="provider-${curProvider.key}" value="${curProvider.key}"
-                           <c:if test="${fn:length(providersList) le 1 or searchCriteria.storedOn ne 'providers'}">disabled </c:if>
-                    <c:if test="${fn:length(providersList) le 1 or (not empty searchCriteria.providers and functions:contains(searchCriteria.providers, curProvider.key))}">
-                           checked </c:if>>
-                    <label for="provider-${curProvider.key}">
-                        <fmt:message var="i18nProviderLabel" key="providers.${curProvider.key}.label"/>
-                            ${fn:escapeXml(fn:contains(i18nProviderLabel, '???') ? curProvider.key : i18nProviderLabel)}
-                    </label>
-                </c:forEach>
-            </c:if>
         </fieldset>
     </form>
 </div>
@@ -137,17 +111,13 @@
             <tr>
                 <th width="2%"><input type="checkbox" id="cbSelectedAllUsers"/></th>
                 <th><fmt:message key="label.name"/></th>
-                <c:if test="${multipleProvidersAvailable}">
-                    <th width="10%"><fmt:message key="column.provider.label"/></th>
-                </c:if>
             </tr>
             </thead>
             <tbody>
             <c:choose>
                 <c:when test="${!usersFound}">
                     <tr>
-                        <td colspan="${multipleProvidersAvailable ? '3' : '2'}"><fmt:message
-                                key="label.noItemFound"/></td>
+                        <td colspan="2"><fmt:message key="label.noItemFound"/></td>
                     </tr>
                 </c:when>
                 <c:otherwise>
@@ -155,15 +125,11 @@
                                varStatus="loopStatus">
                         <tr>
                             <td>
-                                <input class="selectedUser" type="checkbox" name="selectedUsers" value="${user.userKey}"/>
+                                <input class="selectedUser" type="checkbox" name="selectedUsers" value="${user.path}"/>
                             </td>
                             <td>
                                 ${fn:escapeXml(user:displayName(user))}
                             </td>
-                            <c:if test="${multipleProvidersAvailable}">
-                                <fmt:message var="i18nProviderLabel" key="providers.${user.providerName}.label"/>
-                                <td>${fn:escapeXml(fn:contains(i18nProviderLabel, '???') ? user.providerName : i18nProviderLabel)}</td>
-                            </c:if>
                         </tr>
                     </c:forEach>
                 </c:otherwise>

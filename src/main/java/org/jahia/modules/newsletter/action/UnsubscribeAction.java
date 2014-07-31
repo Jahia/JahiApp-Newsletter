@@ -80,6 +80,7 @@ import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.mail.MailService;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
@@ -119,8 +120,10 @@ public class UnsubscribeAction extends Action {
     private MailService mailService;
     @Autowired
 	private SubscriptionService subscriptionService;
-	
-	public static String generateUnsubscribeLink(JCRNodeWrapper newsletterNode, String confirmationKey,
+    @Autowired
+    private transient JahiaUserManagerService userManagerService;
+
+    public static String generateUnsubscribeLink(JCRNodeWrapper newsletterNode, String confirmationKey,
 	        HttpServletRequest req) throws RepositoryException {
 		return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()
 		        + Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
@@ -151,7 +154,8 @@ public class UnsubscribeAction extends Action {
                         subscriptionService.cancel(subscription.getIdentifier(), session);
                     } else {
                         JahiaUser user = renderContext.getUser();
-                        if (JahiaUserManagerService.isGuest(user)) {
+                        JCRUserNode userNode = userManagerService.lookupUserByPath(user.getLocalPath());
+                        if (JahiaUserManagerService.isGuest(user) || userNode == null) {
                             // anonymous users are not allowed (and no email was provided)
                             return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"invalid-user\"}"));
                         }
@@ -160,7 +164,7 @@ public class UnsubscribeAction extends Action {
 
                         if (subscription == null) {
                             return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"invalid-user\"}"));
-                        } else if (forceConfirmationForRegisteredUsers && sendConfirmationMail(session, user.getProperty("j:email"), node, subscription, resource, req)) {
+                        } else if (forceConfirmationForRegisteredUsers && sendConfirmationMail(session, userNode.getPropertyAsString("j:email"), node, subscription, resource, req)) {
                         	return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"mail-sent\"}"));
                         }
 
@@ -210,7 +214,11 @@ public class UnsubscribeAction extends Action {
 		this.subscriptionService = subscriptionService;
 	}
 
-	public void setForceConfirmationForRegisteredUsers(boolean forceConfirmationForRegisteredUsers) {
+    public void setUserManagerService(JahiaUserManagerService userManagerService) {
+        this.userManagerService = userManagerService;
+    }
+
+    public void setForceConfirmationForRegisteredUsers(boolean forceConfirmationForRegisteredUsers) {
     	this.forceConfirmationForRegisteredUsers = forceConfirmationForRegisteredUsers;
     }
 

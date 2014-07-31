@@ -81,6 +81,7 @@ import org.jahia.services.content.JCRContentUtils;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRPropertyWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.usermanager.JahiaUser;
 import org.jahia.services.usermanager.JahiaUserManagerService;
 import org.jahia.utils.PaginatedList;
@@ -113,7 +114,6 @@ public class SubscriptionService {
     private static final String J_EMAIL = "j:email";
     private static final String J_FIRST_NAME = "j:firstName";
     private static final String J_LAST_NAME = "j:lastName";
-    private static final String J_PROVIDER = "j:provider";
     private static final String J_SUBSCRIBER = "j:subscriber";
     private static final String J_SUBSCRIPTIONS = "j:subscriptions";
     private static final String J_SUSPENDED = "j:suspended";
@@ -346,20 +346,8 @@ public class SubscriptionService {
             logger.error("Unable to obtain QueryManager instance");
             return null;
         }
-        String subscriber = user;
-        String provider = null;
-        if (user.charAt(0) == '{') {
-            // we deal with a registered user
-            subscriber = StringUtils.substringAfter(user, "}");
-            provider = StringUtils.substringBetween(user, "{", "}");
-        }
-
         StringBuilder q = new StringBuilder(64);
-        q.append("select * from [" + JNT_SUBSCRIPTION + "] where [" + J_SUBSCRIBER + "]='").append(subscriber)
-                .append("'");
-        if (provider != null) {
-            q.append(" and [" + J_PROVIDER + "]='").append(provider).append("'");
-        }
+        q.append("select * from [" + JNT_SUBSCRIPTION + "] where [" + J_SUBSCRIBER + "]='").append(user).append("'");
         q.append(" and").append(" isdescendantnode([").append(target.getPath()).append("])");
         Query query = queryManager.createQuery(q.toString(), Query.JCR_SQL2);
         query.setLimit(1);
@@ -472,24 +460,22 @@ public class SubscriptionService {
             Map<String, Map<String, Object>> subscribers = new HashMap<String, Map<String, Object>>();
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
-                String username = usernamePosition != -1 ? nextLine[usernamePosition] : null;
+                String userKey = usernamePosition != -1 ? nextLine[usernamePosition] : null;
                 String email = emailPosition != -1 ? nextLine[emailPosition] : null;
                 boolean registered = true;
-                if (StringUtils.isNotEmpty(username)) {
+                if (StringUtils.isNotEmpty(userKey)) {
                     // registered Jahia user is provided
-                    JahiaUser user = username.charAt(0) == '{' ? userManagerService.lookupUserByKey(username) :
-                            userManagerService.lookupUser(username);
+                    JCRUserNode user = userKey.charAt(0) == '/' ? userManagerService.lookupUserByPath(userKey) :
+                            userManagerService.lookupUser(userKey);
                     if (user != null) {
-                        if (username.charAt(0) != '{') {
-                            username = "{" + user.getProviderName() + "}" + username;
-                        }
+                        userKey = user.getPath();
                     } else {
-                        logger.warn("No user can be found for the specified username '" + username +
+                        logger.warn("No user can be found for the specified username '" + userKey +
                                 "'. Skipping subscription: " + StringUtils.join(nextLine, separator));
                         continue;
                     }
                 } else if (StringUtils.isNotEmpty(email)) {
-                    username = email;
+                    userKey = email;
                     registered = false;
                 } else {
                     logger.warn("Neither a j:nodename nor j:email is provided." + "Skipping subscription: " +
@@ -505,10 +491,10 @@ public class SubscriptionService {
                     props.put(column, nextLine[i]);
                 }
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Subscribing '" + username + "' with properties: " + props);
+                    logger.debug("Subscribing '" + userKey + "' with properties: " + props);
                 }
 
-                subscribers.put(username, props);
+                subscribers.put(userKey, props);
                 if (subscribers.size() > 1000) {
                     // flush
                     subscribe(subscribableIdentifier, subscribers, session);
@@ -592,12 +578,7 @@ public class SubscriptionService {
 
             for (Map.Entry<String, Map<String, Object>> subscriber : subscribers.entrySet()) {
                 String username = subscriber.getKey();
-                String provider = null;
-                if (username.charAt(0) == '{') {
-                    // we deal with a registered user
-                    username = StringUtils.substringAfter(subscriber.getKey(), "}");
-                    provider = StringUtils.substringBetween(subscriber.getKey(), "{", "}");
-                } else if (!allowUnregisteredUsers) {
+                if (username.charAt(0) != '/' && !allowUnregisteredUsers) {
                     logger.info(
                             "The target {} does not allow unregistered users to be subscribed. Skipping subscription for {}.",
                             targetPath, subscriber.getKey());
@@ -613,9 +594,6 @@ public class SubscriptionService {
                             .addNode(JCRContentUtils.findAvailableNodeName(subscriptionsNode, "subscription"),
                                     JNT_SUBSCRIPTION);
                     newSubscriptionNode.setProperty(J_SUBSCRIBER, username);
-                    if (provider != null) {
-                        newSubscriptionNode.setProperty(J_PROVIDER, provider);
-                    }
                     storeProperties(newSubscriptionNode, subscriber.getValue(), session);
                 } else {
                     if (logger.isDebugEnabled()) {
@@ -689,29 +667,23 @@ public class SubscriptionService {
         Subscription subscriber = new Subscription();
 
         subscriber.setId(subscriptionNode.getIdentifier());
-        subscriber.setSubscriber(subscriptionNode.getProperty(J_SUBSCRIBER).getString());
+        String subscriberKey = subscriptionNode.getPropertyAsString(J_SUBSCRIBER);
+        subscriber.setSubscriber(subscriberKey);
 
-        String provider = null;
-        try {
-            provider = subscriptionNode.getProperty(J_PROVIDER).getString();
-            subscriber.setProvider(provider);
-        } catch (PathNotFoundException e) {
-            // non-registered subscriber
-        }
-
-        if (provider != null) {
+        if (subscriberKey != null && subscriberKey.charAt(0) == '/') {
             // registered user
-            String key = "{" + provider + "}" + subscriber.getSubscriber();
-            JahiaUser user = userManagerService.lookupUserByKey(key);
+            JCRUserNode user = userManagerService.lookupUserByPath(subscriberKey);
             if (user != null) {
-                subscriber.setFirstName(user.getProperty(J_FIRST_NAME));
-                subscriber.setLastName(user.getProperty(J_LAST_NAME));
-                subscriber.setEmail(user.getProperty(J_EMAIL));
+                subscriber.setFirstName(user.getPropertyAsString(J_FIRST_NAME));
+                subscriber.setLastName(user.getPropertyAsString(J_LAST_NAME));
+                subscriber.setEmail(user.getPropertyAsString(J_EMAIL));
+                subscriber.setName(user.getName());
+                subscriber.setRegisteredUser(true);
             } else {
-                logger.warn("Unable to find user for key {}", key);
+                logger.warn("Unable to find user for key {}", subscriberKey);
             }
         } else {
-            subscriber.setEmail(subscriber.getSubscriber());
+            subscriber.setEmail(subscriberKey);
             try {
                 subscriber.setFirstName(subscriptionNode.getProperty(J_FIRST_NAME).getString());
             } catch (PathNotFoundException e) {

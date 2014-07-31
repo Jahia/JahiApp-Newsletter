@@ -80,6 +80,7 @@ import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.mail.MailService;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
@@ -120,10 +121,14 @@ public class SubscribeAction extends Action {
 
     @Autowired
     private MailService mailService;
+
     @Autowired
 	private SubscriptionService subscriptionService;
 
-	public ActionResult doExecute(final HttpServletRequest req, final RenderContext renderContext,
+    @Autowired
+    private JahiaUserManagerService userManagerService;
+
+    public ActionResult doExecute(final HttpServletRequest req, final RenderContext renderContext,
                                   final Resource resource, JCRSessionWrapper session, final Map<String, List<String>> parameters, URLResolver urlResolver)
 	        throws Exception {
 
@@ -168,14 +173,14 @@ public class SubscribeAction extends Action {
                         }
                     } else {
                         JahiaUser user = renderContext.getUser();
-                        if (JahiaUserManagerService.isGuest(user)) {
+                        JCRUserNode userNode = userManagerService.lookupUserByPath(user.getLocalPath());
+                        if (JahiaUserManagerService.isGuest(user) || userNode == null) {
                             // anonymous users are not allowed (and no email was provided)
                             return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"invalid-email\"}"));
                         }
-
                         if (!allowRegistrationWithoutEmail) {
                             // checking if the user has a valid e-mail address
-                            String userEmail = user.getProperty("j:email");
+                            String userEmail = userNode.getPropertyAsString("j:email");
                             if (userEmail == null || !MailService.isValidEmailAddress(userEmail, false)) {
                                 // no valid e-mail provided -> refuse
                                 return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"no-valid-email\"}"));
@@ -188,7 +193,7 @@ public class SubscribeAction extends Action {
                             JCRNodeWrapper newSubscriptionNode = subscriptionService.subscribe(node.getIdentifier(), user.getUserKey(), forceConfirmationForRegisteredUsers, session);
 
                             if (forceConfirmationForRegisteredUsers) {
-	                            if (sendConfirmationMail(session, user.getProperty("j:email"), node, newSubscriptionNode,
+	                            if (sendConfirmationMail(session, userNode.getPropertyAsString("j:email"), node, newSubscriptionNode,
 	                                    resource.getLocale(), req)) {
 	                                return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"mail-sent\"}"));
 	                            }
@@ -249,7 +254,11 @@ public class SubscribeAction extends Action {
 		this.subscriptionService = subscriptionService;
 	}
 
-	public void setForceConfirmationForRegisteredUsers(boolean forceConfirmationForRegisteredUsers) {
+    public void setUserManagerService(JahiaUserManagerService userManagerService) {
+        this.userManagerService = userManagerService;
+    }
+
+    public void setForceConfirmationForRegisteredUsers(boolean forceConfirmationForRegisteredUsers) {
     	this.forceConfirmationForRegisteredUsers = forceConfirmationForRegisteredUsers;
     }
 

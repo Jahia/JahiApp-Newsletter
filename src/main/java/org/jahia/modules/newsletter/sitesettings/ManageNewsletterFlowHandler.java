@@ -80,9 +80,9 @@ import org.jahia.modules.newsletter.sitesettings.form.CSVFileForm;
 import org.jahia.modules.newsletter.sitesettings.form.TestNewsletterIssueForm;
 import org.jahia.services.content.*;
 import org.jahia.services.content.decorator.JCRSiteNode;
+import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.usermanager.JahiaUser;
-import org.jahia.services.usermanager.JahiaUserManagerProvider;
 import org.jahia.services.usermanager.JahiaUserManagerService;
 import org.jahia.services.usermanager.SearchCriteria;
 import org.jahia.utils.LanguageCodeConverters;
@@ -98,7 +98,6 @@ import org.springframework.webflow.execution.RequestContext;
 
 import javax.jcr.RepositoryException;
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.*;
 
 /**
@@ -296,32 +295,24 @@ public class ManageNewsletterFlowHandler implements Serializable {
         setActionMessage(msgCtx, true, "newsletter.subscription", "resumed", subscriptions.length);
     }
 
-    /* Subscribers */
-    public List<? extends JahiaUserManagerProvider> getProvidersList() {
-        return userManagerService.getProviderList();
-    }
-
-    public Set<JahiaUser> searchUsers(String newsletterUUID, SearchCriteria searchCriteria){
-        Set<JahiaUser> notSubscribeUsers = new LinkedHashSet<JahiaUser>();
+    public Set<JCRUserNode> searchUsers(String newsletterUUID, SearchCriteria searchCriteria){
+        Set<JCRUserNode> notSubscribeUsers = new LinkedHashSet<JCRUserNode>();
         JCRNodeWrapper newsletter = getNodeByUUID(newsletterUUID, getCurrentUserSession("live"));
 
-        Set<Principal> searchResult = PrincipalViewHelper.getSearchResult(searchCriteria.getSearchIn(),
+        Set<JCRUserNode> searchResult = PrincipalViewHelper.getSearchResult(searchCriteria.getSearchIn(),
                 searchCriteria.getSearchString(), searchCriteria.getProperties(), searchCriteria.getStoredOn(),
                 searchCriteria.getProviders());
 
         if(newsletter != null){
-            for (Principal user : searchResult){
-                if(user instanceof JahiaUser){
-                    JahiaUser jahiaUser = (JahiaUser) user;
-                    try {
-                        if(subscriptionService.getSubscription(newsletter, jahiaUser.getUserKey(), getCurrentUserSession("live")) == null){
-                            notSubscribeUsers.add(jahiaUser);
-                        }
-                    } catch (RepositoryException e) {
-                        logger.warn("Error testing if user: " + jahiaUser.getUserKey() + " has subscribed to node: " + newsletterUUID);
+            for (JCRUserNode user : searchResult){
+                try {
+                    if(subscriptionService.getSubscription(newsletter, user.getPath(), getCurrentUserSession("live")) == null){
+                        notSubscribeUsers.add(user);
                     }
+                } catch (RepositoryException e) {
+                    logger.warn("Error testing if user: " + user.getName() + " has subscribed to node: " + newsletterUUID);
                 }
-            }    
+            }
         }
 
         return notSubscribeUsers;
@@ -359,7 +350,7 @@ public class ManageNewsletterFlowHandler implements Serializable {
     }
 
     public SearchCriteria initCriteria(RequestContext ctx) {
-        return new SearchCriteria(getRenderContext(ctx).getSite().getID());
+        return new SearchCriteria(getRenderContext(ctx).getSite().getSiteKey());
     }
 
     public boolean setActionMessage(RequestContext ctx, MessageContext msgCtx, String action, String name, String item) {

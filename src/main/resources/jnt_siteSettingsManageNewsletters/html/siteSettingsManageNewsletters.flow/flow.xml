@@ -93,7 +93,6 @@
     <view-state id="addSubscribers" model="searchCriteria">
         <on-render>
             <evaluate expression="flowHandler.searchUsers(flowScope.newsletterUUID, searchCriteria)" result="requestScope.users"/>
-            <evaluate expression="flowHandler.providersList" result="requestScope.providersList"/>
         </on-render>
         <transition on="cancel" to="manageSubscriptions" validate="false"/>
         <transition on="search" to="addSubscribers"/>

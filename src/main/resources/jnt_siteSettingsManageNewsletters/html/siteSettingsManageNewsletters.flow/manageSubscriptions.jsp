@@ -165,7 +165,6 @@
                     <th><fmt:message key="newsletter.subscription.firstname"/></th>
                     <th><fmt:message key="newsletter.subscription.lastname"/></th>
                     <th><fmt:message key="newsletter.subscription.email"/></th>
-                    <th><fmt:message key="newsletter.subscription.provider"/></th>
                     <th><fmt:message key="newsletter.subscription.confirmed"/></th>
                     <th><fmt:message key="newsletter.subscription.suspended"/></th>
                     <th width="20%"><fmt:message key="label.actions"/></th>
@@ -193,7 +192,7 @@
                                     <i class="icon-user"></i>
                                 </td>
                                 <td>
-                                    ${fn:escapeXml(subscription.subscriber)}
+                                    ${fn:escapeXml(subscription.name)}
                                 </td>
                                 <td>
                                     ${fn:escapeXml(subscription.firstName)}
@@ -203,11 +202,6 @@
                                 </td>
                                 <td>
                                     ${fn:escapeXml(subscription.email)}
-                                </td>
-                                <td>
-                                    <fmt:message var="i18nProviderLabel"
-                                                 key="providers.${subscription.provider}.label"/>
-                                        ${fn:escapeXml(fn:contains(i18nProviderLabel, '???') ? subscription.provider : i18nProviderLabel)}
                                 </td>
                                 <td>
                                    <span class="label ${subscription.confirmed ? 'label-info' : 'label-important'}">

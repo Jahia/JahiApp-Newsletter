@@ -81,6 +81,7 @@ import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.content.decorator.JCRSiteNode;
+import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.mail.MailService;
 import org.jahia.services.notification.HtmlExternalizationService;
 import org.jahia.services.notification.HttpClientService;
@@ -121,7 +122,6 @@ public class NewsletterService {
     private static final String J_SCHEDULED = "j:scheduled";
     private static final String J_PERSONALIZED = "j:personalized";
     private static final String J_PREFERRED_LANGUAGE = "j:preferredLanguage";
-    private static final String DEFAULT_USER = "guest";
 
     @Autowired
     private transient SubscriptionService subscriptionService;
@@ -162,7 +162,7 @@ public class NewsletterService {
                             continue;
                         }
 
-                        String username = DEFAULT_USER;
+                        String username = JahiaUserManagerService.GUEST_USERNAME;
 
                         JahiaSite site = null;
                         try {
@@ -171,11 +171,11 @@ public class NewsletterService {
                         }
 
                         if (personalized && subscription.isRegisteredUser() && subscription.getSubscriber() != null) {
-                            username = subscription.getSubscriber();
+                            username = subscription.getName();
                         }
 
-                        JahiaUser user = subscription.isRegisteredUser() ? userService.lookupUserByKey(subscription.getSubscriber()) : userService.lookupUser(DEFAULT_USER);
-                        RenderContext letterContext = new RenderContext(renderContext.getRequest(), renderContext.getResponse(), user);
+                        JCRUserNode user = subscription.isRegisteredUser() ? userService.lookupUserByPath(subscription.getSubscriber()) : userService.lookupUserByPath(JahiaUserManagerService.GUEST_USERPATH);
+                        RenderContext letterContext = new RenderContext(renderContext.getRequest(), renderContext.getResponse(), user.getJahiaUser());
                         letterContext.setEditMode(renderContext.isEditMode());
                         letterContext.setServletPath(renderContext.getServletPath());
                         letterContext.setWorkspace(renderContext.getWorkspace());

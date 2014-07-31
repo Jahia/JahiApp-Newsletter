@@ -30,11 +30,8 @@
     </thead>
     <tbody>
     <c:forEach items="${moduleMap.currentList}" var="subscription" begin="${moduleMap.begin}" end="${moduleMap.end}" varStatus="status">
-    	<c:set var="subscriber" value="${subscription.propertiesAsString['j:subscriber']}"/>
-    	<c:if test="${not empty subscription.propertiesAsString['j:provider']}">
-    		<c:set var="userKey" value="{${not empty subscription.propertiesAsString['j:provider']}}${subscription.propertiesAsString['j:subscriber']}"/>
-    		<c:set var="registeredUser" value="${functions:lookupUser(userKey)}"/>
-    	</c:if>
+    	<c:set var="subscriber" value="${subscription.properties['j:subscriber'].string}"/>
+    	<c:set var="registeredUser" value="${functions:lookupUser(subscriber)}"/>
         <tr class="${status.count % 2 == 0 ? 'even' : 'odd'}">
         <td align="center">
         	${status.count}
@@ -42,14 +39,14 @@
         <td>
             <div class="jahia-template-gxt" jahiatype="module" id="subscription-${subscription.identifier}" type="existingNode"
                  scriptInfo="" path="${subscription.path}" template="hidden.system" dragdrop="false">
-              	${fn:escapeXml(not empty registeredUser ? registeredUser.username : subscriber)}
+              	${fn:escapeXml(not empty registeredUser ? registeredUser.name : subscriber)}
             </div>
         </td>
         <td>
-        	${not empty registeredUser ? registeredUser.userProperties.properties['j:lastName'] : subscription.propertiesAsString['j:lastName']}
+        	${not empty registeredUser ? registeredUser.properties['j:lastName'].string : subscription.properties['j:lastName'].string}
         </td>
         <td>
-        	${not empty registeredUser ? registeredUser.userProperties.properties['j:firstName'] : subscription.propertiesAsString['j:firstName']}
+        	${not empty registeredUser ? registeredUser.properties['j:firstName'].string : subscription.properties['j:firstName'].string}
         </td>
         <td>
             ${subscription.properties['j:confirmed'].boolean}
