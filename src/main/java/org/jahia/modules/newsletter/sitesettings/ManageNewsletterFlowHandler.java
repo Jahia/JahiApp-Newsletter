@@ -299,11 +299,16 @@ public class ManageNewsletterFlowHandler implements Serializable {
         Set<JCRUserNode> notSubscribeUsers = new LinkedHashSet<JCRUserNode>();
         JCRNodeWrapper newsletter = getNodeByUUID(newsletterUUID, getCurrentUserSession("live"));
 
-        Set<JCRUserNode> searchResult = PrincipalViewHelper.getSearchResult(searchCriteria.getSearchIn(),
-                searchCriteria.getSearchString(), searchCriteria.getProperties(), searchCriteria.getStoredOn(),
-                searchCriteria.getProviders());
+        Set<JCRUserNode> searchResult = null;
 
         if(newsletter != null){
+            try {
+                searchResult = PrincipalViewHelper.getSearchResult(searchCriteria.getSearchIn(), newsletter.getResolveSite().getSiteKey(),
+                        searchCriteria.getSearchString(), searchCriteria.getProperties(), searchCriteria.getStoredOn(),
+                        searchCriteria.getProviders());
+            } catch (RepositoryException e) {
+                logger.error(e.getMessage(), e);
+            }
             for (JCRUserNode user : searchResult){
                 try {
                     if(subscriptionService.getSubscription(newsletter, user.getPath(), getCurrentUserSession("live")) == null){
