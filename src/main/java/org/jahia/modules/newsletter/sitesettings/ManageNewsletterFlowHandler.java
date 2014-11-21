@@ -309,13 +309,15 @@ public class ManageNewsletterFlowHandler implements Serializable {
             } catch (RepositoryException e) {
                 logger.error(e.getMessage(), e);
             }
-            for (JCRUserNode user : searchResult){
-                try {
-                    if(subscriptionService.getSubscription(newsletter, user.getPath(), getCurrentUserSession("live")) == null){
-                        notSubscribeUsers.add(user);
+            if (searchResult != null) {
+                for (JCRUserNode user : searchResult) {
+                    try {
+                        if (subscriptionService.getSubscription(newsletter, user.getPath(), getCurrentUserSession("live")) == null) {
+                            notSubscribeUsers.add(user);
+                        }
+                    } catch (RepositoryException e) {
+                        logger.warn("Error testing if user: " + user.getName() + " has subscribed to node: " + newsletterUUID);
                     }
-                } catch (RepositoryException e) {
-                    logger.warn("Error testing if user: " + user.getName() + " has subscribed to node: " + newsletterUUID);
                 }
             }
         }
