@@ -45,7 +45,7 @@
         <version>6.6.1.0</version>
     </parent>
     <groupId>org.jahia.modules</groupId>
-    <artifactId>newsletter</artifactId>
+    <artifactId>newsletter-test</artifactId>
     <version>1.6-SNAPSHOT</version>
     <name>Jahia Newsletter</name>
     <packaging>war</packaging>
