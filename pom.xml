@@ -91,6 +91,11 @@
     <developerConnection>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</developerConnection>
     <url>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</url>
   </scm>
+    <properties>
+        <export-package>org.jahia.modules.newsletter</export-package>
+        <jahia-module-type>jahiapp</jahia-module-type>
+        <jahia-depends>default,siteSettings,tasks,grid</jahia-depends>
+    </properties>
   <repositories>
     <repository>
       <releases>
@@ -117,20 +122,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Export-Package>org.jahia.modules.newsletter</Export-Package>
-            <Jahia-Module-Type>jahiapp</Jahia-Module-Type>
-            <Jahia-Depends>default,siteSettings,tasks,grid</Jahia-Depends>
-            <Import-Package>${jahia.plugin.projectPackageImport},
-                  *</Import-Package>
-          </instructions>
-        </configuration>
       </plugin>
     </plugins>
   </build>
