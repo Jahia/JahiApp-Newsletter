@@ -46,7 +46,7 @@
     </parent>
     <groupId>org.jahia.modules</groupId>
     <artifactId>newsletter-test</artifactId>
-    <version>1.6</version>
+    <version>1.7-SNAPSHOT</version>
     <name>Jahia Newsletter</name>
     <packaging>war</packaging>
     <description>Jahia template module that enables newsletter subscription management features.</description>
