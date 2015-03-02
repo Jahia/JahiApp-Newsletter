@@ -46,7 +46,7 @@
                     return {
                         data: row,
                         value: row['username'],
-                        result: getUserDisplayName(row)
+                        result: row['username']
                     }
                 });
             },
