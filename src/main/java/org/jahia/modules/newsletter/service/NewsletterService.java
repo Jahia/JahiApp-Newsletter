@@ -222,6 +222,14 @@ public class NewsletterService {
         node.setProperty(J_LAST_SENT, Calendar.getInstance());
         node.getSession().save();
 
+		//publish the node so it doesn't appear as modified
+		JCRPublicationService publicationService = JCRPublicationService.getInstance();
+        if(publicationService != null) {
+            publicationService.publish(Collections.singletonList(node.getIdentifier()),
+                    node.getSession().getWorkspace().getName(),
+                    Constants.LIVE_WORKSPACE, Collections.singletonList(""));
+        }
+		
         logger.info("The content of the node {} was sent as a newsletter in {} ms", node.getPath(),
                 System.currentTimeMillis() - timer);
 
