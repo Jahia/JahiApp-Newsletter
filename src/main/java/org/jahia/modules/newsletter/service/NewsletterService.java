@@ -73,13 +73,11 @@ package org.jahia.modules.newsletter.service;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.jahia.api.Constants;
 import org.jahia.exceptions.JahiaException;
 import org.jahia.modules.newsletter.action.UnsubscribeAction;
 import org.jahia.modules.newsletter.service.model.Subscription;
-import org.jahia.services.content.JCRCallback;
-import org.jahia.services.content.JCRNodeWrapper;
-import org.jahia.services.content.JCRSessionWrapper;
-import org.jahia.services.content.JCRTemplate;
+import org.jahia.services.content.*;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.mail.MailService;
 import org.jahia.services.notification.HtmlExternalizationService;
