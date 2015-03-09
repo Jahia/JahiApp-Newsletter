@@ -77,7 +77,7 @@ import org.jahia.modules.newsletter.service.NewsletterService;
 import org.jahia.modules.newsletter.service.SubscriptionService;
 import org.jahia.modules.newsletter.service.model.Subscription;
 import org.jahia.modules.newsletter.sitesettings.form.CSVFileForm;
-import org.jahia.modules.newsletter.sitesettings.form.TestNewsletterIssueForm;
+import org.jahia.modules.newsletter.sitesettings.form.FormTestIssue;
 import org.jahia.services.content.*;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.content.decorator.JCRUserNode;
@@ -125,7 +125,7 @@ public class ManageNewsletterFlowHandler implements Serializable {
     private transient JahiaUserManagerService userManagerService;
 
     // models
-    private TestNewsletterIssueForm testNewsletterIssueForm;
+    private FormTestIssue formTestIssue;
 
     /* Newsletters */
     public List<JCRNodeWrapper> getSiteNewsletters(RequestContext ctx) {
@@ -159,21 +159,25 @@ public class ManageNewsletterFlowHandler implements Serializable {
         return getNodeByUUID(identifier, getCurrentUserSession("live"));
     }
 
-    public TestNewsletterIssueForm initTestIssueForm(String selectedIssue) {
-        testNewsletterIssueForm = new TestNewsletterIssueForm(selectedIssue);
-        testNewsletterIssueForm.setUser("guest");
-        testNewsletterIssueForm.setLocale(LocaleContextHolder.getLocale().toString());
-        return testNewsletterIssueForm;
+    public FormTestIssue initTestIssueForm(String selectedIssue) {
+        if (formTestIssue == null) {
+            formTestIssue = new FormTestIssue(selectedIssue);
+            formTestIssue.setUser("guest");
+        } else {
+            formTestIssue.setIssueUUID(selectedIssue);
+        }
+        formTestIssue.setLocale(LocaleContextHolder.getLocale().toString());
+        return formTestIssue;
     }
 
     public boolean testIssue(RequestContext ctx, MessageContext msgCtx) {
         final Map<String, String> newsletterVersions = new HashMap<String, String>();
 
-        JCRNodeWrapper node = getNodeByUUID(testNewsletterIssueForm.getIssueUUID(), getCurrentUserSession(ctx));
+        JCRNodeWrapper node = getNodeByUUID(formTestIssue.getIssueUUID(), getCurrentUserSession(ctx));
         boolean testIssueSent = false;
         try {
-            testIssueSent = newsletterService.sendIssue(getRenderContext(ctx), node, testNewsletterIssueForm.getTestmail(), testNewsletterIssueForm.getUser(), "html",
-                    LanguageCodeConverters.languageCodeToLocale(testNewsletterIssueForm.getLocale()), "live",
+            testIssueSent = newsletterService.sendIssue(getRenderContext(ctx), node, formTestIssue.getTestmail(), formTestIssue.getUser(), "html",
+                    LanguageCodeConverters.languageCodeToLocale(formTestIssue.getLocale()), "live",
                     newsletterVersions);
         } catch (RepositoryException e) {
             logger.warn("Unable to update properties for node " + node.getPath(), e);
@@ -432,12 +436,12 @@ public class ManageNewsletterFlowHandler implements Serializable {
         return (RenderContext) ctx.getExternalContext().getRequestMap().get("renderContext");
     }
 
-    public TestNewsletterIssueForm getTestNewsletterIssueForm() {
-        return testNewsletterIssueForm;
+    public FormTestIssue getFormTestIssue() {
+        return formTestIssue;
     }
 
-    public void setTestNewsletterIssueForm(TestNewsletterIssueForm testNewsletterIssueForm) {
-        this.testNewsletterIssueForm = testNewsletterIssueForm;
+    public void setFormTestIssue(FormTestIssue formTestIssue) {
+        this.formTestIssue = formTestIssue;
     }
 
     public NewsletterService getNewsletterService() {

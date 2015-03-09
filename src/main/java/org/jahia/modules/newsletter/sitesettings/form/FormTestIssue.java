@@ -84,7 +84,7 @@ import java.io.Serializable;
  * Time: 09:39
  * To change this template use File | Settings | File Templates.
  */
-public class TestNewsletterIssueForm implements Serializable{
+public class FormTestIssue implements Serializable{
 
     private static final long serialVersionUID = -372924372635884450L;
     private String issueUUID;
@@ -96,7 +96,7 @@ public class TestNewsletterIssueForm implements Serializable{
     private String user;
     private String locale;
 
-    public TestNewsletterIssueForm(String issueUUID) {
+    public FormTestIssue(String issueUUID) {
         this.issueUUID = issueUUID;
     }
 
