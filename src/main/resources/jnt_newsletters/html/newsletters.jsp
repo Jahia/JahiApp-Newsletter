@@ -14,6 +14,7 @@
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
 <template:include view="hidden.header"/>
+<a class="btn btn-primary" href="<c:url value="${url.base}${renderContext.site.path}.newsletterManager.html"/>"><fmt:message key="siteSettings.label.newsletterManager"/></a>
 
 <table width="100%" cellspacing="0" cellpadding="5" border="0" class="table">
     <thead>
@@ -26,7 +27,9 @@
     </tr>
     </thead>
     <tbody>
+    <c:set var="hasNewsletter" value="false"/>
     <c:forEach items="${moduleMap.currentList}" var="newsletter" begin="${moduleMap.begin}" end="${moduleMap.end}" varStatus="status">
+        <c:set var="hasNewsletter" value="true"/>
         <tr class="${status.count % 2 == 0 ? 'even' : 'odd'}">
         <td align="center">
             <img src="<c:url value='${url.currentModule}/icons/jnt_newsletter_large.png'/>" height="48" width="48" alt=" "/>
@@ -50,7 +53,6 @@
         </td>
         </tr>
     </c:forEach>
-
     <c:if test="${not omitFormatting}">
         <div class="clear"></div>
     </c:if>

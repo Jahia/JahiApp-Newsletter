@@ -62,7 +62,7 @@
     });
 </script>
 
-<h2><fmt:message key="newsletter.issue.test"/> fdfd- ${fn:escapeXml(issue.displayableName)}</h2>
+<h2><fmt:message key="newsletter.issue.test"/> ${fn:escapeXml(issue.displayableName)}</h2>
 
 <c:forEach var="msg" items="${flowRequestContext.messageContext.allMessages}">
     <div class="${msg.severity == 'ERROR' ? 'validationError' : ''} alert ${msg.severity == 'ERROR' ? 'alert-error' : 'alert-success'}">
@@ -76,9 +76,9 @@
 
         <div class="row-fluid">
             <div class="span4">
-                <label for="testmail"><fmt:message key="label.email"/> <span class="text-error"><strong>*</strong></span></label>
+                <label for="testmail"><fmt:message key="siteSettings.label.test.email"/> <span class="text-error"><strong>*</strong></span></label>
                 <form:input class="span12" type="text" id="testmail" path="testmail"/>
-                <label for="user"><fmt:message key="label.user"/> <span class="text-error"><strong>*</strong></span></label>
+                <label for="user"><fmt:message key="siteSettings.label.test.user"/> <span class="text-error"><strong>*</strong></span></label>
                 <form:input class="span12" type="text" id="user" path="user"/>
             </div>
         </div>
