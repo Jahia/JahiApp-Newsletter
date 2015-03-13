@@ -243,23 +243,20 @@ public class NewsletterService {
         if (!newsletterVersions.containsKey(key)) {
             JCRTemplate.getInstance().doExecuteWithUserSession(user, workspace, locale, new JCRCallback<String>() {
                 public String doInJCR(JCRSessionWrapper session) throws RepositoryException {
+                    RenderContext localRenderContext = new RenderContext(renderContext.getRequest(),renderContext.getResponse(),session.getUser());
                     boolean isEdit = renderContext.isEditMode();
-                    String previousWorkspace = renderContext.getWorkspace();
-                    Resource previousResource = renderContext.getMainResource();
-                    JCRSiteNode previousSite = renderContext.getSite();
-                    SiteInfo previousSiteInfo = renderContext.getSiteInfo();
-                    String previousServletPath = renderContext.getServletPath();
+
                     HashMap<String, Object> removedAttributes = new HashMap<String, Object>();
 
                     try {
-                        renderContext.setEditMode(false);
-                        renderContext.setWorkspace(workspace);
-                        renderContext.setServletPath("/cms/render");
+                        localRenderContext.setEditMode(false);
+                        localRenderContext.setWorkspace(workspace);
+                        localRenderContext.setServletPath("/cms/render");
                         JCRNodeWrapper node = session.getNodeByIdentifier(id);
-                        Resource resource = new Resource(node, "html", null, "page");
-                        renderContext.setMainResource(resource);
-                        renderContext.setSite(node.getResolveSite());
-                        renderContext.setSiteInfo(new SiteInfo(node.getResolveSite()));
+                        Resource resource = new Resource(node, "html", "default", "page");
+                        localRenderContext.setMainResource(resource);
+                        localRenderContext.setSite(node.getResolveSite());
+                        localRenderContext.setSiteInfo(new SiteInfo(node.getResolveSite()));
 
                         // Clear attributes
                         @SuppressWarnings("rawtypes")
@@ -272,8 +269,8 @@ public class NewsletterService {
                             }
                         }
 
-                        String out = renderService.render(resource, renderContext);
-                        out = htmlExternalizationService.externalize(out, renderContext);
+                        String out = renderService.render(resource, localRenderContext);
+                        out = htmlExternalizationService.externalize(out, localRenderContext);
                         newsletterVersions.put(key, out);
 
                         String title = node.getName();
@@ -284,12 +281,6 @@ public class NewsletterService {
                     } catch (RenderException e) {
                         throw new RepositoryException(e);
                     } finally {
-                        renderContext.setEditMode(isEdit);
-                        renderContext.setWorkspace(previousWorkspace);
-                        renderContext.setMainResource(previousResource);
-                        renderContext.setSite(previousSite);
-                        renderContext.setSiteInfo(previousSiteInfo);
-                        renderContext.setServletPath(previousServletPath);
                         for (String key : removedAttributes.keySet()){
                             renderContext.getRequest().setAttribute(key, removedAttributes.get(key));
                         }
