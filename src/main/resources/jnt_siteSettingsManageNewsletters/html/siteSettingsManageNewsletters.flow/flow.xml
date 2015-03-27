@@ -37,6 +37,7 @@
         <on-render>
             <evaluate expression="flowHandler.getNewsletter(flowRequestContext, flowScope.newsletterUUID)" result="requestScope.newsletter"/>
             <evaluate expression="flowHandler.getIssues(flowRequestContext, flowScope.newsletterUUID)" result="requestScope.issues"/>
+            <evaluate expression="flowHandler.getSubscriptions(flowScope.newsletterUUID)" result="requestScope.subscriptions"/>
         </on-render>
         <transition on="createIssue" to="formIssue" bind="false" validate="false"/>
         <transition on="editIssue" to="formIssue" bind="false" validate="false">
