@@ -63,6 +63,12 @@
     </div>
 
     <p>
+        <c:if test="${subscriptions.totalSize == 0}">
+            <div class="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <fmt:message key="newsletter.subscriptions.empty" />
+            </div>
+        </c:if>
         <c:forEach items="${flowRequestContext.messageContext.allMessages}" var="message">
             <c:if test="${message.severity eq 'INFO'}">
                 <div class="alert alert-success">
