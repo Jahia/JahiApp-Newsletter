@@ -232,7 +232,7 @@ public class ManageNewsletterFlowHandler implements Serializable {
                 //in case of newsletter publish j:subscriptions sub node
                 if(nodeWrapper.isNodeType("jnt:newsletter")){
                     JCRNodeWrapper subscriptionsNode = nodeWrapper.getNode("j:subscriptions");
-                    if(!subscriptionsNode.hasProperty("j:lastPublished")){
+                    if(!subscriptionsNode.hasProperty(Constants.LASTPUBLISHED)){
                         publicationService.publish(Collections.singletonList(subscriptionsNode.getIdentifier()),
                                 nodeWrapper.getSession().getWorkspace().getName(),
                                 Constants.LIVE_WORKSPACE, Collections.singletonList(""));
