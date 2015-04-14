@@ -244,7 +244,6 @@ public class NewsletterService {
             JCRTemplate.getInstance().doExecuteWithUserSession(user, workspace, locale, new JCRCallback<String>() {
                 public String doInJCR(JCRSessionWrapper session) throws RepositoryException {
                     RenderContext localRenderContext = new RenderContext(renderContext.getRequest(),renderContext.getResponse(),session.getUser());
-                    boolean isEdit = renderContext.isEditMode();
 
                     HashMap<String, Object> removedAttributes = new HashMap<String, Object>();
 
