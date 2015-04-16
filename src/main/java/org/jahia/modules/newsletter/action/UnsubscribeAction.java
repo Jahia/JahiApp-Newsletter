@@ -185,7 +185,7 @@ public class UnsubscribeAction extends Action {
         if (mailConfirmationTemplate != null) {
             session.checkout(subscription);
             String confirmationKey = subscriptionService.generateConfirmationKey(subscription);
-            subscription.setProperty("j:confirmationKey", confirmationKey);
+            subscription.setProperty(SubscriptionService.J_CONFIRMATION_KEY, confirmationKey);
             session.save();
 
             Map<String, Object> bindings = new HashMap<String, Object>();

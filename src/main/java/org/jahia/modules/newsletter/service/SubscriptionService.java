@@ -123,7 +123,7 @@ public class SubscriptionService {
     private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
     @Autowired
-	private JahiaUserManagerService userManagerService;
+    private JahiaUserManagerService userManagerService;
     
     /**
      * Cancels the specified subscriptions.
