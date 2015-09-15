@@ -316,7 +316,7 @@ public class ManageNewsletterFlowHandler implements Serializable {
             if (searchResult != null) {
                 for (JCRUserNode user : searchResult) {
                     try {
-                        if (subscriptionService.getSubscription(newsletter, user.getPath(), getCurrentUserSession("live")) == null) {
+                        if (subscriptionService.getSubscription(newsletter, user.getUserKey(), getCurrentUserSession("live")) == null) {
                             notSubscribeUsers.add(user);
                         }
                     } catch (RepositoryException e) {

@@ -160,7 +160,7 @@ public class UnsubscribeAction extends Action {
                             return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"invalid-user\"}"));
                         }
 
-                        JCRNodeWrapper subscription = subscriptionService.getSubscription(node, user.getUsername(), session);
+                        JCRNodeWrapper subscription = subscriptionService.getSubscription(node, user.getUserKey(), session);
 
                         if (subscription == null) {
                             return new ActionResult(SC_OK, null, new JSONObject("{\"status\":\"invalid-user\"}"));
