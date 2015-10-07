@@ -159,25 +159,20 @@ public class NewsletterService {
                             continue;
                         }
 
-                        String username = JahiaUserManagerService.GUEST_USERNAME;
-
                         JahiaSite site = null;
                         try {
                             site = siteService.getSiteByKey(node.getResolveSite().getSiteKey());
                         } catch (JahiaException ignored) {
                         }
 
-                        if (personalized && subscription.isRegisteredUser() && subscription.getSubscriber() != null) {
-                            username = subscription.getName();
-                        }
-
-                        JCRUserNode user = subscription.isRegisteredUser() ? userService.lookupUserByPath(subscription.getSubscriber()) : userService.lookupUserByPath(JahiaUserManagerService.GUEST_USERPATH);
-                        RenderContext letterContext = new RenderContext(renderContext.getRequest(), renderContext.getResponse(), user.getJahiaUser());
+                        JahiaUser letterUser = personalized && subscription.isRegisteredUser() && subscription.getSubscriber() != null ?  userService.lookupUserByPath(subscription.getSubscriber()).getJahiaUser() : userService.lookupUserByPath(JahiaUserManagerService.GUEST_USERPATH).getJahiaUser();
+                        JCRUserNode contextUser = subscription.isRegisteredUser() ? userService.lookupUserByPath(subscription.getSubscriber()) : userService.lookupUserByPath(JahiaUserManagerService.GUEST_USERPATH);
+                        RenderContext letterContext = new RenderContext(renderContext.getRequest(), renderContext.getResponse(), contextUser.getJahiaUser());
                         letterContext.setEditMode(renderContext.isEditMode());
                         letterContext.setServletPath(renderContext.getServletPath());
                         letterContext.setWorkspace(renderContext.getWorkspace());
                         Locale language = subscription.isRegisteredUser() ?
-                                UserPreferencesHelper.getPreferredLocale(user, site) :
+                                UserPreferencesHelper.getPreferredLocale(contextUser, site) :
                                 LanguageCodeConverters.languageCodeToLocale(subscription.getProperties().get(J_PREFERRED_LANGUAGE));
                         if (language == null) {
                             language = LanguageCodeConverters.languageCodeToLocale(site != null ? site.getDefaultLanguage() : SettingsBean.getInstance().getDefaultLanguageCode());
@@ -198,7 +193,7 @@ public class NewsletterService {
                         } else {
                             letterContext.getRequest().setAttribute("org.jahia.modules.newsletter.unsubscribeLink", UnsubscribeAction.generateUnsubscribeLink(target, confirmationKey, renderContext.getRequest()));
                         }
-                        sendIssue(letterContext, node, subscription.getEmail(), username, "html",
+                        sendIssue(letterContext, node, subscription.getEmail(), letterUser, "html",
                                 language, "live",
                                 newsletterVersions);
                     }
@@ -234,16 +229,16 @@ public class NewsletterService {
     }
 
     public boolean sendIssue(final RenderContext renderContext, final JCRNodeWrapper node, final String email,
-                                   final String user, final String type, final Locale locale, final String workspace, final Map<String, String> newsletterVersions)
+                                   final JahiaUser user, final String type, final Locale locale, final String workspace, final Map<String, String> newsletterVersions)
             throws RepositoryException {
 
         final String id = node.getIdentifier();
 
-        final String key = locale + user + type;
+        final String key = locale + user.getName() + type;
         if (!newsletterVersions.containsKey(key)) {
-            JCRTemplate.getInstance().doExecuteWithUserSession(user, workspace, locale, new JCRCallback<String>() {
+            JCRTemplate.getInstance().doExecute(user, workspace, locale, new JCRCallback<String>() {
                 public String doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                    RenderContext localRenderContext = new RenderContext(renderContext.getRequest(),renderContext.getResponse(),session.getUser());
+                    RenderContext localRenderContext = new RenderContext(renderContext.getRequest(), renderContext.getResponse(), session.getUser());
 
                     HashMap<String, Object> removedAttributes = new HashMap<String, Object>();
 
@@ -280,7 +275,7 @@ public class NewsletterService {
                     } catch (RenderException e) {
                         throw new RepositoryException(e);
                     } finally {
-                        for (String key : removedAttributes.keySet()){
+                        for (String key : removedAttributes.keySet()) {
                             renderContext.getRequest().setAttribute(key, removedAttributes.get(key));
                         }
                     }

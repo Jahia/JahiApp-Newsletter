@@ -175,8 +175,9 @@ public class ManageNewsletterFlowHandler implements Serializable {
 
         JCRNodeWrapper node = getNodeByUUID(formTestIssue.getIssueUUID(), getCurrentUserSession(ctx));
         boolean testIssueSent = false;
+        JahiaUser user = userManagerService.lookup(formTestIssue.getUser()).getJahiaUser();
         try {
-            testIssueSent = newsletterService.sendIssue(getRenderContext(ctx), node, formTestIssue.getTestmail(), formTestIssue.getUser(), "html",
+            testIssueSent = newsletterService.sendIssue(getRenderContext(ctx), node, formTestIssue.getTestmail(), user, "html",
                     LanguageCodeConverters.languageCodeToLocale(formTestIssue.getLocale()), "live",
                     newsletterVersions);
         } catch (RepositoryException e) {
