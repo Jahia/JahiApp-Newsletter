@@ -106,7 +106,7 @@ public class Subscription implements Serializable {
 
     private boolean registeredUser;
 
-	private transient Map<String, String> properties = new HashMap<String, String>(1);
+	private Map<String, String> properties = new HashMap<String, String>(1);
 
 	@Override
 	public boolean equals(Object obj) {

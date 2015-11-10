@@ -85,7 +85,7 @@ import java.io.Serializable;
 public class CSVFileForm implements Serializable{
     private static final long serialVersionUID = -8157399476713576533L;
     private String csvSeparator;
-    private transient MultipartFile csvFile;
+    private MultipartFile csvFile;
 
     public String getCsvSeparator() {
         return csvSeparator;
