@@ -231,7 +231,24 @@ public class SubscribeAction extends Action {
                     + node.getLanguage() + node.getPath() + ".confirm.do?key="+confirmationKey+"&exec=add");
             try {
             	String modulePackageNameToUse = getTemplateName(mailConfirmationTemplate,node, locale,"Jahia Newsletter");
-                mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailService.defaultSender(), null, null,
+				String mailSender = mailService.defaultSender();
+
+		        try {
+		            JCRSiteNode siteNode = node.getResolveSite();
+
+		            if (siteNode.isNodeType("jmix:newsletterSender")) {
+		                String newMailSender = siteNode.getPropertyAsString(
+		                        "newsletterMailSender");
+
+		                if ((newMailSender != null) &&
+		                        !"".equals(newMailSender.trim())) {
+		                    mailSender = newMailSender;
+		                }
+		            }
+		        } catch (Exception ue) {
+		            logger.debug(ue.getMessage(), ue);
+		        }
+                mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailSender, null, null,
                         locale, modulePackageNameToUse);
             } catch (ScriptException e) {
                 logger.error("Cannot generate confirmation mail",e);

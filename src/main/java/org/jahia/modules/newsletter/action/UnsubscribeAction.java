@@ -223,7 +223,24 @@ public class UnsubscribeAction extends Action {
             bindings.put("confirmationlink", generateUnsubscribeLink(node, confirmationKey, req));
             try {
             	String modulePackageNameToUse = getTemplateName(mailConfirmationTemplate,node, resource.getLocale(),"Jahia Newsletter");
-                mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailService.defaultSender(), null, null, resource.getLocale(), modulePackageNameToUse);
+				String mailSender = mailService.defaultSender();
+
+		        try {
+		            JCRSiteNode siteNode = node.getResolveSite();
+
+		            if (siteNode.isNodeType("jmix:newsletterSender")) {
+		                String newMailSender = siteNode.getPropertyAsString(
+		                        "newsletterMailSender");
+
+		                if ((newMailSender != null) &&
+		                        !"".equals(newMailSender.trim())) {
+		                    mailSender = newMailSender;
+		                }
+		            }
+		        } catch (Exception ue) {
+		            logger.debug(ue.getMessage(), ue);
+		        }
+                mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailSender, null, null, resource.getLocale(), modulePackageNameToUse);
             } catch (ScriptException e) {
                 logger.error("Cannot generate confirmation mail",e);
             }
