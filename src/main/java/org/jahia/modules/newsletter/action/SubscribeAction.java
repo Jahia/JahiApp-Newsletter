@@ -71,11 +71,14 @@
  */
 package org.jahia.modules.newsletter.action;
 
+import org.apache.commons.lang.StringUtils;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
 import org.jahia.bin.Jahia;
 import org.jahia.bin.Render;
+import org.jahia.data.templates.JahiaTemplatesPackage;
 import org.jahia.modules.newsletter.service.SubscriptionService;
+import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
@@ -227,8 +230,9 @@ public class SubscribeAction extends Action {
                     Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
                     + node.getLanguage() + node.getPath() + ".confirm.do?key="+confirmationKey+"&exec=add");
             try {
+            	String modulePackageNameToUse = getTemplateName(mailConfirmationTemplate,node, locale,"Jahia Newsletter");
                 mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailService.defaultSender(), null, null,
-                        locale, "Jahia Newsletter");
+                        locale, modulePackageNameToUse);
             } catch (ScriptException e) {
                 logger.error("Cannot generate confirmation mail",e);
             }
@@ -238,6 +242,31 @@ public class SubscribeAction extends Action {
         return false;
     }
 
+	/**
+	* Check if templatSet has mail template
+	*/
+    private String getTemplateName(String template, JCRNodeWrapper node,  final Locale locale, String defaultTemplate){
+    	String templateToReturn = defaultTemplate;
+
+    	try {
+	    	//try if it is multilingual
+	        String suffix = StringUtils.substringAfterLast(template, ".");
+	    	String languageMailConfTemplate = template.substring(0, template.length() - (suffix.length()+1)) + "_" + locale.toString() + "." + suffix;
+	    	String templatePackageName = node.getResolveSite().getTemplatePackageName();
+	    	JahiaTemplatesPackage templatePackage = ServicesRegistry.getInstance().getJahiaTemplateManagerService().getTemplatePackage(templatePackageName);
+	    	org.springframework.core.io.Resource templateRealPath = templatePackage.getResource(languageMailConfTemplate);
+	    	if(templateRealPath == null) {
+	          templateRealPath = templatePackage.getResource(template);
+	    	}
+	    	if (templateRealPath!=null){
+	    		templateToReturn = templatePackageName;
+	    	}
+    	} catch (Exception ue){
+    		logger.error("Error resolving template for site");
+    	}
+
+    	return templateToReturn;
+    }
     public void setAllowRegistrationWithoutEmail(boolean allowRegistrationWithoutEmail) {
 		this.allowRegistrationWithoutEmail = allowRegistrationWithoutEmail;
 	}

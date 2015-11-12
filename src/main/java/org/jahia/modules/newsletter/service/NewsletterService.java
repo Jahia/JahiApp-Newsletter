@@ -286,10 +286,27 @@ public class NewsletterService {
         String out = newsletterVersions.get(key);
         String subject = newsletterVersions.get(key + ".title");
         if (logger.isDebugEnabled()) {
-            logger.debug("Send newsltter to " + email + " , subject " + subject);
+            logger.debug("Send newsletter to " + email + " , subject " + subject);
             logger.debug(out);
         }
-        return mailService.sendHtmlMessage(mailService.defaultSender(), email, null, null, subject, out);
+		String mailSender = mailService.defaultSender();
+
+        try {
+            JCRSiteNode siteNode = node.getResolveSite();
+
+            if (siteNode.isNodeType("jmix:newsletterSender")) {
+                String newMailSender = siteNode.getPropertyAsString(
+                        "newsletterMailSender");
+
+                if ((newMailSender != null) &&
+                        !"".equals(newMailSender.trim())) {
+                    mailSender = newMailSender;
+                }
+            }
+        } catch (Exception ue) {
+            logger.debug(ue.getMessage(), ue);
+        }
+        return mailService.sendHtmlMessage(mailSender, email, null, null, subject, out);
     }
 
     public List<JCRNodeWrapper> getSiteNewsletters(JCRSiteNode site, String orderBy, boolean orderAscending, JCRSessionWrapper session){
