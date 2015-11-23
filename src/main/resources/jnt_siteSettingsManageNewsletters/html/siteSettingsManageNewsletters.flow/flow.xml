@@ -64,7 +64,9 @@
             <evaluate expression="flowHandler.initCriteria(flowRequestContext)" result="flowScope.searchCriteria"/>
             <evaluate expression="flowHandler.getSubscriptions(flowScope.newsletterUUID)" result="requestScope.subscriptions"/>
         </on-render>
-        <transition on="refresh" to="manageSubscriptions" validate="false"/>
+        <transition on="refresh" to="manageSubscriptions" validate="false">
+          <set name="flashScope.displayLimit" value="requestParameters.displayLimit" type="java.lang.Integer"/>
+        </transition>
         <transition on="cancel" to="manageNewsletters" bind="false" validate="false"/>
         <transition on="addSubscribers" to="addSubscribers" validate="false"/>
         <transition on="bulkAddSubscribers" to="bulkAddSubscribers" validate="false"/>
