@@ -28,7 +28,7 @@
         GNU General Public License for more details.
 
         You should have received a copy of the GNU General Public License
-        along with this program. If not, see <http://www.gnu.org/licenses/>.
+        along with this program. If not, see <http://www.gnu.org/licenses />.
 
 
         2/ JSEL - Commercial and Supported Versions of the program
@@ -54,7 +54,7 @@
   </parent>
   <groupId>org.jahia.modules</groupId>
   <artifactId>newsletter</artifactId>
-  <version>3.0.2-SNAPSHOT</version>
+  <version>3.0.2</version>
   <packaging>bundle</packaging>
   <name>Jahia Newsletter</name>
   <description>Jahia template module that enables newsletter subscription management features.</description>
@@ -62,7 +62,7 @@
     <connection>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</connection>
     <developerConnection>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</developerConnection>
     <url>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</url>
-    <tag>HEAD</tag>
+    <tag>3_0_2</tag>
   </scm>
     <properties>
         <export-package>org.jahia.modules.newsletter</export-package>
