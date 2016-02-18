@@ -21,6 +21,7 @@
 <%--@elvariable id="subscriptions" type="org.jahia.utils.PaginatedList<org.jahia.services.notification.Subscription>"--%>
 
 <c:set var="subscriptionDisplayLimit" value="${functions:default(fn:escapeXml(displayLimit), newsletterProperties.subscriptionDisplayLimit)}"/>
+<c:set var="subscriptionsFound" value="${subscriptions.totalSize > 0}"/>
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
 <fmt:message var="i18nSingleRemove" key="newsletter.subscriptions.single.remove"/><c:set var="i18nSingleRemove" value="${fn:escapeXml(i18nSingleRemove)}"/>
 <fmt:message var="i18nSingleSuspend" key="newsletter.subscriptions.single.suspend"/><c:set var="i18nSingleSuspend" value="${fn:escapeXml(i18nSingleSuspend)}"/>
@@ -58,7 +59,11 @@
             }
             return false;
         }
-
+    </script>
+</template:addResources>
+<c:if test="${subscriptionsFound}">
+<template:addResources>
+    <script type="text/javascript">
         $(document).ready(function() {
             $(':checkbox[name="selectedSubscriptions"]').click(function() {
                 if (!this.checked) {
@@ -81,6 +86,7 @@
         })
     </script>
 </template:addResources>
+</c:if>
 
 <h2>
     <fmt:message key="newsletter.subscritpions.manage">
@@ -88,7 +94,6 @@
     </fmt:message>
 </h2>
 
-<c:set var="subscriptionsFound" value="${subscriptions.totalSize > 0}"/>
 <form action="${flowExecutionUrl}" method="POST" style="display: inline;">
     <div>
         <div>
