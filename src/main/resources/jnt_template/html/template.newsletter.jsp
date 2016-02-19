@@ -18,6 +18,7 @@
 <title>${fn:escapeXml(currentNode.displayableName)}</title>
 </head>
 <body>
+<c:set value="${renderContext.editModeConfigName eq 'studiomode' or renderContext.editModeConfigName eq 'studiovisualmode'}" var="isStudio"/>
 <div class="bodywrapper">
     <table style="font-size:11px;background-color:#eaeaea;width:100%;font-family: Arial, Helvetica, sans-serif;line-height:160%;"
            width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -29,7 +30,13 @@
                         <td style="padding: 8px 0 8px 0;">
                                                         <p style="font-size: 11px;font-weight: normal;font-style: italic;color: #333;text-align: center;">
                                 <fmt:message key="newsletter.intro.1">
-                                    <fmt:param value="<a style='color: #0066ff;text-decoration: none;' href='/' name='top'>${renderContext.site.title}</a>"/>
+                                    <c:if test="${isStudio}">
+                                    <fmt:param
+                                            value="<a style='color: #0066ff;text-decoration: none;' href='/' name='top'>${renderContext.site.properties['j:nodename'].string}</a>"/>
+                                    </c:if>
+                                    <c:if test="${not isStudio}">
+                                        <fmt:param value="<a style='color: #0066ff;text-decoration: none;' href='/' name='top'>${renderContext.site.title}</a>"/>
+                                    </c:if>
                                 </fmt:message>
                                 <br/>
                                 <fmt:message key="newsletter.intro.2"/>
