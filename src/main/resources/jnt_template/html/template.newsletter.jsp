@@ -30,13 +30,7 @@
                         <td style="padding: 8px 0 8px 0;">
                                                         <p style="font-size: 11px;font-weight: normal;font-style: italic;color: #333;text-align: center;">
                                 <fmt:message key="newsletter.intro.1">
-                                    <c:if test="${isStudio}">
-                                    <fmt:param
-                                            value="<a style='color: #0066ff;text-decoration: none;' href='/' name='top'>${renderContext.site.properties['j:nodename'].string}</a>"/>
-                                    </c:if>
-                                    <c:if test="${not isStudio}">
-                                        <fmt:param value="<a style='color: #0066ff;text-decoration: none;' href='/' name='top'>${renderContext.site.title}</a>"/>
-                                    </c:if>
+                                    <fmt:param value="<a style='color: #0066ff;text-decoration: none;' href='/' name='top'>${isStudio ? renderContext.site.name : renderContext.site.title}</a>"/>
                                 </fmt:message>
                                 <br/>
                                 <fmt:message key="newsletter.intro.2"/>
