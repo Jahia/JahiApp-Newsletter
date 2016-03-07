@@ -323,6 +323,8 @@ public class ManageNewsletterFlowHandler implements Serializable {
                 return null;
             }
         });
+        // As csvFile attribute is not serializable we put it to null to remove the Spring WebFlow serialization issue
+        csvFileForm.setCsvFile(null);
         setActionMessage(msgCtx, true, "newsletter.subscription", "imported", null);
     }
 
