@@ -66,7 +66,6 @@
   </scm>
     <properties>
         <export-package>org.jahia.modules.newsletter</export-package>
-        <jahia-module-type>jahiapp</jahia-module-type>
         <jahia-depends>default,siteSettings,tasks,grid</jahia-depends>
     </properties>
   <repositories>
