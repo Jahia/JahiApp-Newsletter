@@ -20,7 +20,7 @@
 <%--@elvariable id="searchCriteria" type="org.jahia.services.usermanager.SearchCriteria"--%>
 <%--@elvariable id="subscriptions" type="org.jahia.utils.PaginatedList<org.jahia.services.notification.Subscription>"--%>
 
-<c:set var="subscriptionDisplayLimit" value="${functions:default(fn:escapeXml(param.displayLimit), newsletterProperties.subscriptionDisplayLimit)}"/>
+<c:set var="subscriptionDisplayLimit" value="${functions:default(fn:escapeXml(displayLimit), newsletterProperties.subscriptionDisplayLimit)}"/>
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
 <fmt:message var="i18nSingleRemove" key="newsletter.subscriptions.single.remove"/><c:set var="i18nSingleRemove" value="${fn:escapeXml(i18nSingleRemove)}"/>
 <fmt:message var="i18nSingleSuspend" key="newsletter.subscriptions.single.suspend"/><c:set var="i18nSingleSuspend" value="${fn:escapeXml(i18nSingleSuspend)}"/>
@@ -30,7 +30,7 @@
 <fmt:message var="i18nMultipleResume" key="newsletter.subscriptions.multiple.resume"/><c:set var="i18nMultipleResume" value="${fn:escapeXml(i18nMultipleResume)}"/>
 <fmt:message var="i18nNothingSelected" key="newsletter.subscriptions.multiple.nothingSelected"/><c:set var="i18nNothingSelected" value="${fn:escapeXml(i18nNothingSelected)}"/>
 
-<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
+<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js,datatables/jquery.dataTables.js,i18n/jquery.dataTables-${currentResource.locale}.js,datatables/dataTables.bootstrap-ext.js"/>
 <template:addResources type="css" resources="admin-bootstrap.css"/>
 <template:addResources type="css" resources="jquery-ui.smoothness.css,jquery-ui.smoothness-jahia.css"/>
 <template:addResources>
@@ -71,6 +71,13 @@
                     this.checked=state;
                 });
             });
+            var subscriptionsTable = $('#subscriptionsTable');
+            subscriptionsTable.dataTable({
+                "sDom": "<'row-fluid'<'span6'l><'span6 text-right'f>r>t<'row-fluid'<'span6'i><'span6 text-right'p>>",
+                "iDisplayLength": 10,
+                "sPaginationType": "bootstrap",
+                "aaSorting": [] //this option disable sort by default, the user can still use column names to sort the table
+            });
         })
     </script>
 </template:addResources>
@@ -82,8 +89,7 @@
 </h2>
 
 <c:set var="subscriptionsFound" value="${subscriptions.totalSize > 0}"/>
-
-<form action="${flowExecutionUrl}" method="post" style="display: inline;">
+<form action="${flowExecutionUrl}" method="POST" style="display: inline;">
     <div>
         <div>
             <button class="btn" type="submit" name="_eventId_cancel">
@@ -122,19 +128,19 @@
 
         <p>
             <c:forEach items="${flowRequestContext.messageContext.allMessages}" var="message">
-                <c:if test="${message.severity eq 'INFO'}">
-                    <div class="alert alert-success">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        ${message.text}
-                    </div>
-                </c:if>
-                <c:if test="${message.severity eq 'ERROR'}">
-                    <div class="alert alert-error">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        ${message.text}
-                    </div>
-                </c:if>
-            </c:forEach>
+            <c:if test="${message.severity eq 'INFO'}">
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                ${message.text}
+        </div>
+        </c:if>
+        <c:if test="${message.severity eq 'ERROR'}">
+            <div class="alert alert-error">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    ${message.text}
+            </div>
+        </c:if>
+        </c:forEach>
         </p>
 
         <div>
@@ -146,8 +152,8 @@
                         <fmt:param value="${subscriptionDisplayLimit}"/>
                     </fmt:message>
                     <form action="${flowExecutionUrl}" method="post" style="display: inline;">
-                        <input type="hidden" name="displayLimit" value="<%= Integer.MAX_VALUE %>"/>
-                        <button class="btn" type="submit" name="refresh">
+                        <input type="hidden" id="memberFormDisplayLimit" name="displayLimit" value="<%= Integer.MAX_VALUE %>"/>
+                        <button class="btn" type="submit" name="_eventId_refresh">
                             <i class="icon-search"></i>
                             &nbsp;<fmt:message key="newsletter.subscriptions.showAll"/>
                         </button>
@@ -155,7 +161,7 @@
                 </div>
             </c:if>
 
-            <table class="table table-bordered table-striped table-hover">
+            <table id="subscriptionsTable" class="table table-bordered table-striped table-hover">
                 <thead>
                 <tr>
                     <th width="2%"><input type="checkbox" name="selectedAllSubscriptions" id="cbSelectedAllSubscriptions"/></th>
@@ -187,22 +193,22 @@
                                     <input type="checkbox" name="selectedSubscriptions" value="${subscription.id}"/>
                                 </td>
                                 <td>
-                                    ${loopStatus.count}
+                                        ${loopStatus.count}
                                 </td>
                                 <td>
                                     <i class="icon-user"></i>
                                 </td>
                                 <td>
-                                    ${fn:escapeXml(subscription.subscriber)}
+                                        ${fn:escapeXml(subscription.subscriber)}
                                 </td>
                                 <td>
-                                    ${fn:escapeXml(subscription.firstName)}
+                                        ${fn:escapeXml(subscription.firstName)}
                                 </td>
                                 <td>
-                                    ${fn:escapeXml(subscription.lastName)}
+                                        ${fn:escapeXml(subscription.lastName)}
                                 </td>
                                 <td>
-                                    ${fn:escapeXml(subscription.email)}
+                                        ${fn:escapeXml(subscription.email)}
                                 </td>
                                 <td>
                                     <fmt:message var="i18nProviderLabel"
@@ -211,7 +217,7 @@
                                 </td>
                                 <td>
                                    <span class="label ${subscription.confirmed ? 'label-info' : 'label-important'}">
-                                        ${subscription.confirmed ? i18nYes : i18nNo}
+                                           ${subscription.confirmed ? i18nYes : i18nNo}
                                    </span>
                                 </td>
                                 <td>
