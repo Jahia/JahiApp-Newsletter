@@ -4,7 +4,7 @@
         <newsletter j:dependencies="default siteSettings tasks"
                   j:installedModules="newsletter"
                   j:modulePriority="0"
-                  j:moduleType="module"
+                  j:moduleType="jahiapp"
                   j:title="JahiApp - Newsletter"
                   jcr:mixinTypes="jmix:accessControlled jmix:hasExternalProviderExtension"
                   jcr:primaryType="jnt:module">
