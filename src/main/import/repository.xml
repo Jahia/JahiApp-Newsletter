@@ -32,7 +32,7 @@
                             j:hiddenTemplate="true"
                                   j:icon="/modules/newsletter/templates/files/jahiapp-newsletter.png"
                             j:priority="100"
-                            j:requiredPermissionNames="siteAdminLinkChecker"
+                            j:requiredPermissionNames="siteAdminNewsletter"
                             j:titleKey="siteSettings.label.newsletterManager"
                             jcr:mixinTypes="jmix:rbTitle"
                             jcr:primaryType="jnt:contentTemplate">
