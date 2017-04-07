@@ -67,7 +67,7 @@ import java.util.Map;
 /**
  * An action and a background task that sends the content of the specified node as a newsletter
  * to its subscribers.
- * 
+ *
  * @author Thomas Draier
  * @author Sergiy Shyrkov
  */
@@ -80,9 +80,13 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
     @Autowired
     private transient NewsletterService newsletterService;
     private String localServerURL;
+    private String serverProtocol;
+    private String serverPort;
+    private String serverContext;
+    
 
     public ActionResult doExecute(final HttpServletRequest req, final RenderContext renderContext,
-                                  Resource resource, JCRSessionWrapper session, Map<String, List<String>> parameters, URLResolver urlResolver)
+            Resource resource, JCRSessionWrapper session, Map<String, List<String>> parameters, URLResolver urlResolver)
             throws Exception {
         JCRNodeWrapper node = resource.getNode();
         Map<String, String> newsletterVersions = new HashMap<String, String>();
@@ -96,15 +100,27 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
         }
     }
 
+    @Override
     public void executeBackgroundAction(JCRNodeWrapper node) {
         // do local post on node.getPath/sendAsNewsletter.do
         try {
             Map<String,String> headers = new HashMap<String,String>();
             headers.put("jahiatoken",TokenAuthValveImpl.addToken(node.getSession().getUser()));
             headers.put("accept", "text/plain");
-            String out = httpClientService.executePost(localServerURL + Render.getRenderServletPath() + "/live/"
-                            + node.getResolveSite().getDefaultLanguage() + node.getPath()
-                            + ".sendAsNewsletter.do", null, headers);
+            final String serverURL;
+            if (localServerURL == null || localServerURL.isEmpty()) {
+                if ((serverProtocol.equals("http") && serverPort.equals("80")) || (serverProtocol.equals("https") && serverPort.equals("443"))) {
+                    serverURL = serverProtocol + "://" + node.getResolveSite().getServerName() + "/" + serverContext;
+                } else {
+                    serverURL = serverProtocol + "://" + node.getResolveSite().getServerName() + ":" + serverPort + "/" + serverContext;
+                }
+            } else {
+                serverURL = localServerURL;
+            }
+
+            String out = httpClientService.executePost(serverURL + Render.getRenderServletPath() + "/live/"
+                    + node.getResolveSite().getDefaultLanguage() + node.getPath()
+                    + ".sendAsNewsletter.do", null, headers);
             logger.info(out);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -133,5 +149,29 @@ public class SendAsNewsletterAction extends Action implements BackgroundAction {
 
     public void setLocalServerURL(String localServerURL) {
         this.localServerURL = localServerURL;
+    }
+
+    public String getServerProtocol() {
+        return serverProtocol;
+    }
+
+    public void setServerProtocol(String serverProtocol) {
+        this.serverProtocol = serverProtocol;
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(String serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public String getServerContext() {
+        return serverContext;
+    }
+
+    public void setServerContext(String serverContext) {
+        this.serverContext = serverContext;
     }
 }
