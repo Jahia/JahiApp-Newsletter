@@ -23,10 +23,9 @@
     <bean class="org.jahia.modules.newsletter.service.SubscriptionService" id="subscriptionService"/>
 
     <bean class="org.jahia.modules.newsletter.action.SendAsNewsletterAction">
-        <property name="localServerURL" value="${newsletterLocaServerURL:}"/>
-        <property name="serverProtocol" value="${newsletterServerProtocol:http}"/>
-        <property name="serverPort" value="${newsletterServerPort:8080}"/>
-        <property name="serverContext" value="${newsletterServerContext:}"/>
+        <property name="localServerURL" value="${newsletterLocaServerURL:http://127.0.0.1:8080}"/>
+        <!--If your jahia is not deployed in ROOT context please provide contextpath in this URL-->
+        <!--<property name="localServerURL" value="http://127.0.0.1:8080/jahia"/>-->
     </bean>
 
     <bean class="org.jahia.modules.newsletter.action.SubscribeAction">
