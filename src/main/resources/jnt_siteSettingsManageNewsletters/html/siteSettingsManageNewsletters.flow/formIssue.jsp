@@ -23,10 +23,6 @@
 <%--@elvariable id="issueTemplate" type="org.jahia.services.content.JCRNodeWrapper"--%>
 <%--@elvariable id="issue" type="org.jahia.services.content.JCRNodeWrapper"--%>
 
-<%
-    pageContext.setAttribute("templatePackageRegistry", ServicesRegistry.getInstance().getJahiaTemplateManagerService().getTemplatePackageRegistry());
-%>
-
 <template:addResources type="javascript" resources="jquery.min.js,jquery.form.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
 <template:addResources type="css" resources="admin-bootstrap.css"/>
 <template:addResources type="css" resources="jquery-ui.smoothness.css,jquery-ui.smoothness-jahia.css"/>
@@ -150,17 +146,10 @@
                         <div class="span4">
                             <label for="issueTemplate"><fmt:message key="newsletter.issue.template"/></label>
                             <c:set var="issueTemplateName" value="${isUpdate ? issue.properties['j:templateName'].string : ''}"/>
-                            <c:set var="site" value="${renderContext.mainResource.node.resolveSite}"/>
-                            <c:set var="modules" value="${site.installedModules}"/>
                             <select name="j:templateName" id="issueTemplate">
-                                <c:forEach items="${modules}" var="moduleStr">
-                                    <c:set var="module" value="${templatePackageRegistry.registeredModules[moduleStr]}"/>
-                                    <c:set var="version" value="${module.version}"/>
-                                    <jcr:sql var="issueTemplates" sql="select * from [jnt:contentTemplate] where [j:applyOn] = 'jnt:newsletterIssue' and isdescendantnode(['/modules/${module}/${version}/'])"/>
-                                    <c:forEach items="${issueTemplates.nodes}" var="issueTemplate">
-                                        <c:set var="currentIssueTemplateName" value="${issueTemplate.properties['j:nodename'].string}"/>
-                                        <option value="${currentIssueTemplateName}" ${isUpdate and (issueTemplateName eq currentIssueTemplateName) ? 'selected' : ''}>${issueTemplate.displayableName}</option>
-                                    </c:forEach>
+                                <c:forEach items="${newsletterTemplates}" var="issueTemplate">
+                                    <c:set var="currentIssueTemplateName" value="${issueTemplate.properties['j:nodename'].string}"/>
+                                    <option value="${currentIssueTemplateName}" ${isUpdate and (issueTemplateName eq currentIssueTemplateName) ? 'selected' : ''}>${issueTemplate.displayableName}</option>
                                 </c:forEach>
                             </select>
                         </div>

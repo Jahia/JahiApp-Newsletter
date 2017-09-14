@@ -128,6 +128,7 @@
     </view-state>
 
     <view-state id="formIssue">
+        <on-render> <evaluate expression="flowHandler.getNewsletterTemplates(flowRequestContext)" result="requestScope.newsletterTemplates"/> </on-render>
         <transition on="actionPerformed" to="manageIssues">
             <evaluate expression="flowHandler.setActionMessage(flowRequestContext, messageContext, requestParameters.type, requestParameters.name, requestParameters.model)" />
         </transition>
