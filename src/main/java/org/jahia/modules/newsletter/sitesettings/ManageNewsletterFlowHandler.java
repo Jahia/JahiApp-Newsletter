@@ -71,6 +71,13 @@ import org.springframework.webflow.execution.RequestContext;
 import javax.jcr.RepositoryException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import javax.jcr.Node;
+import javax.jcr.query.Query;
+import org.jahia.data.templates.JahiaTemplatesPackage;
+import org.jahia.registries.ServicesRegistry;
+import org.jahia.services.query.QueryResultWrapper;
+import org.jahia.services.templates.TemplatePackageRegistry;
 
 /**
  * Created with IntelliJ IDEA.
@@ -371,7 +378,7 @@ public class ManageNewsletterFlowHandler implements Serializable {
                         node.getSession().getWorkspace().getName(),
                         Constants.LIVE_WORKSPACE, Collections.singletonList(""));
             }
-            
+
             return true;
         } catch (RepositoryException e) {
             logger.error("Error removing node " + node.getDisplayableName(), e);
@@ -425,5 +432,30 @@ public class ManageNewsletterFlowHandler implements Serializable {
 
     public void setNewsletterService(NewsletterService newsletterService) {
         this.newsletterService = newsletterService;
+    }
+
+    public List<JCRNodeWrapper> getNewsletterTemplates(RequestContext ctx) {
+        final TemplatePackageRegistry templatePackageRegistry = ServicesRegistry.getInstance().getJahiaTemplateManagerService().getTemplatePackageRegistry();
+        final JCRSiteNode siteNode = getRenderContext(ctx).getSite();
+        final JCRSessionWrapper sessionWrapper = getCurrentUserSession(ctx);
+        final List<String> installedModules = siteNode.getAllInstalledModules();
+        final List<JCRNodeWrapper> templates = new ArrayList<>();
+        final String queryTemplate = "select * from [jnt:contentTemplate] where [j:applyOn] = 'jnt:newsletterIssue' and isdescendantnode(['/modules/%s/%s/'])";
+        for (String installedModule : installedModules) {
+            try {
+                final JahiaTemplatesPackage module = templatePackageRegistry.getRegisteredModules().get(installedModule);
+                final String queryStr = String.format(queryTemplate, module, module.getVersion());
+                final Query query = sessionWrapper.getWorkspace().getQueryManager().createQuery(queryStr, Query.JCR_SQL2);
+                final QueryResultWrapper queryResult = (QueryResultWrapper) query.execute();
+                for (Node node : queryResult.getNodes()) {
+                    templates.add((JCRNodeWrapper) node);
+                }
+            } catch (RepositoryException ex) {
+                final String errMsg = String.format("Error getting templates for module %s", installedModule);
+                logger.error(errMsg, ex);
+                java.util.logging.Logger.getLogger(ManageNewsletterFlowHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return templates;
     }
 }
