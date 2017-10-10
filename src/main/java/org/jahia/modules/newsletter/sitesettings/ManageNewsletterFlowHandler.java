@@ -3,20 +3,22 @@
  * =                   JAHIA'S DUAL LICENSING - IMPORTANT INFORMATION                       =
  * ==========================================================================================
  *
- *     Copyright (C) 2002-2015 Jahia Solutions Group SA. All rights reserved.
+ *                                 http://www.jahia.com
+ *
+ *     Copyright (C) 2002-2017 Jahia Solutions Group SA. All rights reserved.
  *
  *     THIS FILE IS AVAILABLE UNDER TWO DIFFERENT LICENSES:
  *     1/GPL OR 2/JSEL
  *
  *     1/ GPL
- *     ======================================================================================
+ *     ==================================================================================
  *
- *     IF YOU DECIDE TO CHOSE THE GPL LICENSE, YOU MUST COMPLY WITH THE FOLLOWING TERMS:
+ *     IF YOU DECIDE TO CHOOSE THE GPL LICENSE, YOU MUST COMPLY WITH THE FOLLOWING TERMS:
  *
- *     "This program is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License
- *     as published by the Free Software Foundation; either version 2
- *     of the License, or (at your option) any later version.
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
  *
  *     This program is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,18 +26,11 @@
  *     GNU General Public License for more details.
  *
  *     You should have received a copy of the GNU General Public License
- *     along with this program; if not, write to the Free Software
- *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *     along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- *     As a special exception to the terms and conditions of version 2.0 of
- *     the GPL (or any later version), you may redistribute this Program in connection
- *     with Free/Libre and Open Source Software ("FLOSS") applications as described
- *     in Jahia's FLOSS exception. You should have received a copy of the text
- *     describing the FLOSS exception, also available here:
- *     http://www.jahia.com/license"
  *
  *     2/ JSEL - Commercial and Supported Versions of the program
- *     ======================================================================================
+ *     ===================================================================================
  *
  *     IF YOU DECIDE TO CHOOSE THE JSEL LICENSE, YOU MUST COMPLY WITH THE FOLLOWING TERMS:
  *
@@ -45,29 +40,6 @@
  *
  *     If you are unsure which license is appropriate for your use,
  *     please contact the sales department at sales@jahia.com.
- *
- *
- * ==========================================================================================
- * =                                   ABOUT JAHIA                                          =
- * ==========================================================================================
- *
- *     Rooted in Open Source CMS, Jahia’s Digital Industrialization paradigm is about
- *     streamlining Enterprise digital projects across channels to truly control
- *     time-to-market and TCO, project after project.
- *     Putting an end to “the Tunnel effect”, the Jahia Studio enables IT and
- *     marketing teams to collaboratively and iteratively build cutting-edge
- *     online business solutions.
- *     These, in turn, are securely and easily deployed as modules and apps,
- *     reusable across any digital projects, thanks to the Jahia Private App Store Software.
- *     Each solution provided by Jahia stems from this overarching vision:
- *     Digital Factory, Workspace Factory, Portal Factory and eCommerce Factory.
- *     Founded in 2002 and headquartered in Geneva, Switzerland,
- *     Jahia Solutions Group has its North American headquarters in Washington DC,
- *     with offices in Chicago, Toronto and throughout Europe.
- *     Jahia counts hundreds of global brands and governmental organizations
- *     among its loyal customers, in more than 20 countries across the globe.
- *
- *     For more information, please visit http://www.jahia.com
  */
 package org.jahia.modules.newsletter.sitesettings;
 
@@ -99,6 +71,13 @@ import org.springframework.webflow.execution.RequestContext;
 import javax.jcr.RepositoryException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import javax.jcr.Node;
+import javax.jcr.query.Query;
+import org.jahia.data.templates.JahiaTemplatesPackage;
+import org.jahia.registries.ServicesRegistry;
+import org.jahia.services.query.QueryResultWrapper;
+import org.jahia.services.templates.TemplatePackageRegistry;
 
 /**
  * Created with IntelliJ IDEA.
@@ -351,6 +330,8 @@ public class ManageNewsletterFlowHandler implements Serializable {
                 return null;
             }
         });
+        // As csvFile attribute is not serializable we put it to null to remove the Spring WebFlow serialization issue
+        csvFileForm.setCsvFile(null);
         setActionMessage(msgCtx, true, "newsletter.subscription", "imported", null);
     }
 
@@ -397,7 +378,7 @@ public class ManageNewsletterFlowHandler implements Serializable {
                         node.getSession().getWorkspace().getName(),
                         Constants.LIVE_WORKSPACE, Collections.singletonList(""));
             }
-            
+
             return true;
         } catch (RepositoryException e) {
             logger.error("Error removing node " + node.getDisplayableName(), e);
@@ -451,5 +432,30 @@ public class ManageNewsletterFlowHandler implements Serializable {
 
     public void setNewsletterService(NewsletterService newsletterService) {
         this.newsletterService = newsletterService;
+    }
+
+    public List<JCRNodeWrapper> getNewsletterTemplates(RequestContext ctx) {
+        final TemplatePackageRegistry templatePackageRegistry = ServicesRegistry.getInstance().getJahiaTemplateManagerService().getTemplatePackageRegistry();
+        final JCRSiteNode siteNode = getRenderContext(ctx).getSite();
+        final JCRSessionWrapper sessionWrapper = getCurrentUserSession(ctx);
+        final List<String> installedModules = siteNode.getAllInstalledModules();
+        final List<JCRNodeWrapper> templates = new ArrayList<>();
+        final String queryTemplate = "select * from [jnt:contentTemplate] where [j:applyOn] = 'jnt:newsletterIssue' and isdescendantnode(['/modules/%s/%s/'])";
+        for (String installedModule : installedModules) {
+            try {
+                final JahiaTemplatesPackage module = templatePackageRegistry.getRegisteredModules().get(installedModule);
+                final String queryStr = String.format(queryTemplate, module, module.getVersion());
+                final Query query = sessionWrapper.getWorkspace().getQueryManager().createQuery(queryStr, Query.JCR_SQL2);
+                final QueryResultWrapper queryResult = (QueryResultWrapper) query.execute();
+                for (Node node : queryResult.getNodes()) {
+                    templates.add((JCRNodeWrapper) node);
+                }
+            } catch (RepositoryException ex) {
+                final String errMsg = String.format("Error getting templates for module %s", installedModule);
+                logger.error(errMsg, ex);
+                java.util.logging.Logger.getLogger(ManageNewsletterFlowHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return templates;
     }
 }

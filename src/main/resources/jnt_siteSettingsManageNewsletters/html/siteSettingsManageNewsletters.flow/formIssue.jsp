@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.jahia.registries.ServicesRegistry"%>
+<%@ page import="org.jahia.services.templates.JahiaTemplateManagerService"%>
 <%@ taglib prefix="template" uri="http://www.jahia.org/tags/templateLib" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -81,14 +83,14 @@
                 submitIssueForm("actionPerformed", $("#issueName").val(), "${isUpdate ? 'updated' : 'created'}");
             },
             error: function() {
-                <c:choose>
-                    <c:when test="${isUpdate}">
-                        showIssueErrors("${i18nUpdateFailed}");
-                    </c:when>
-                    <c:otherwise>
-                        showIssueErrors("${i18nCreationFailed}");
-                    </c:otherwise>
-                </c:choose>
+    <c:choose>
+        <c:when test="${isUpdate}">
+                showIssueErrors("${i18nUpdateFailed}");
+        </c:when>
+        <c:otherwise>
+                showIssueErrors("${i18nCreationFailed}");
+        </c:otherwise>
+    </c:choose>
             }
         };
 
@@ -144,9 +146,8 @@
                         <div class="span4">
                             <label for="issueTemplate"><fmt:message key="newsletter.issue.template"/></label>
                             <c:set var="issueTemplateName" value="${isUpdate ? issue.properties['j:templateName'].string : ''}"/>
-                            <jcr:sql var="issueTemplates" sql="select * from [jnt:contentTemplate] where [j:applyOn] = 'jnt:newsletterIssue'"/>
                             <select name="j:templateName" id="issueTemplate">
-                                <c:forEach items="${issueTemplates.nodes}" var="issueTemplate">
+                                <c:forEach items="${newsletterTemplates}" var="issueTemplate">
                                     <c:set var="currentIssueTemplateName" value="${issueTemplate.properties['j:nodename'].string}"/>
                                     <option value="${currentIssueTemplateName}" ${isUpdate and (issueTemplateName eq currentIssueTemplateName) ? 'selected' : ''}>${issueTemplate.displayableName}</option>
                                 </c:forEach>
@@ -163,26 +164,26 @@
                         <input id="issueScheduleDateDecoy" type="text" class="span4" value="${isScheduled ? currentSchedule : ''}"/>
                         <input id="issueScheduleDate" type="hidden" name="j:scheduled" value="${isScheduled ? issue.properties["j:scheduled"].string : ''}"/>
                         <a class="label label-important" id="emptyIssueSchedule" href="#" onclick="emptyIssueSchedule(); return false;"><i class="icon-remove icon-white"></i></a>
-                        <ui:dateSelector fieldId="issueScheduleDateDecoy" time="true" >
+                            <ui:dateSelector fieldId="issueScheduleDateDecoy" time="true" >
                             {
-                                dateFormat: 'dd.mm.yy',
-                                showButtonPanel: true,
-                                showOn:'focus',
-                                <%-- Below is the conf for a good date time format for date properties
-                                 TODO externalize this in dateSelector tag --%>
-                                altField: "#issueScheduleDate",
-                                altFieldTimeOnly: false,
-                                altFormat: "yy-mm-dd",
-                                altTimeFormat: "HH:mm:ss.lZ",
-                                altSeparator: "T",
-                                showSecond: false,
-                                showMillisec: false,
-                                showMicrosec: false,
-                                showTimezone: false
+                            dateFormat: 'dd.mm.yy',
+                            showButtonPanel: true,
+                            showOn:'focus',
+                            <%-- Below is the conf for a good date time format for date properties
+                             TODO externalize this in dateSelector tag --%>
+                            altField: "#issueScheduleDate",
+                            altFieldTimeOnly: false,
+                            altFormat: "yy-mm-dd",
+                            altTimeFormat: "HH:mm:ss.lZ",
+                            altSeparator: "T",
+                            showSecond: false,
+                            showMillisec: false,
+                            showMicrosec: false,
+                            showTimezone: false
                             }
                         </ui:dateSelector>
-                        </div>
                     </div>
+                </div>
 
                 </div>
             </fieldset>
