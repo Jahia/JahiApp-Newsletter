@@ -231,8 +231,10 @@ public class NewsletterService {
                             String attr = (String) attributeNames.nextElement();
                             if (!attr.startsWith("org.jahia.modules.newsletter.")) {
                                 removedAttributes.put(attr, renderContext.getRequest().getAttribute(attr));
-                                renderContext.getRequest().removeAttribute(attr);
                             }
+                        }
+                        for (String attribute : removedAttributes.keySet()) {
+                            renderContext.getRequest().removeAttribute(attribute);
                         }
 
                         String out = renderService.render(resource, localRenderContext);
