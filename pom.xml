@@ -54,7 +54,7 @@
   </parent>
   <groupId>org.jahia.modules</groupId>
   <artifactId>newsletter</artifactId>
-  <version>3.0.6</version>
+  <version>3.0.7-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>Jahia Newsletter</name>
   <description>Jahia template module that enables newsletter subscription management features.</description>
@@ -62,7 +62,7 @@
     <connection>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</connection>
     <developerConnection>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</developerConnection>
     <url>scm:git:git@github.com:Jahia/JahiApp-Newsletter.git</url>
-    <tag>3_0_6</tag>
+    <tag>3_0_x</tag>
   </scm>
     <properties>
         <export-package>org.jahia.modules.newsletter</export-package>
