@@ -65,7 +65,9 @@
     <tag>HEAD</tag>
   </scm>
     <properties>
-        <export-package>org.jahia.modules.newsletter</export-package>
+    	<!-- Sub-package export to be available for other modules : Make it possible to register newsletter from other module actions as before in 6.6 -->
+        <export-package>org.jahia.modules.newsletter,org.jahia.modules.newsletter.service,org.jahia.modules.newsletter.service.model</export-package>
+        <jahia-module-type>jahiapp</jahia-module-type>
         <jahia-depends>default,siteSettings,tasks,grid</jahia-depends>
     </properties>
   <repositories>

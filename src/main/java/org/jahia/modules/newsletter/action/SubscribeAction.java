@@ -43,17 +43,21 @@
  */
 package org.jahia.modules.newsletter.action;
 
+import org.apache.commons.lang.StringUtils;
 import org.jahia.bin.Action;
 import org.jahia.bin.ActionResult;
 import org.jahia.bin.Jahia;
 import org.jahia.bin.Render;
+import org.jahia.data.templates.JahiaTemplatesPackage;
 import org.jahia.modules.newsletter.service.SubscriptionService;
+import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.mail.MailService;
+import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.render.RenderContext;
 import org.jahia.services.render.Resource;
 import org.jahia.services.render.URLResolver;
@@ -199,8 +203,26 @@ public class SubscribeAction extends Action {
                     Jahia.getContextPath() + Render.getRenderServletPath() + "/live/"
                     + node.getLanguage() + node.getPath() + ".confirm.do?key="+confirmationKey+"&exec=add");
             try {
-                mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailService.defaultSender(), null, null,
-                        locale, "Jahia Newsletter");
+            	String modulePackageNameToUse = getTemplateName(mailConfirmationTemplate,node, locale,"Jahia Newsletter");
+				String mailSender = mailService.defaultSender();
+
+		        try {
+		            JCRSiteNode siteNode = node.getResolveSite();
+
+		            if (siteNode.isNodeType("jmix:newsletterSender")) {
+		                String newMailSender = siteNode.getPropertyAsString(
+		                        "newsletterMailSender");
+
+		                if ((newMailSender != null) &&
+		                        !"".equals(newMailSender.trim())) {
+		                    mailSender = newMailSender;
+		                }
+		            }
+		        } catch (Exception ue) {
+		            logger.debug(ue.getMessage(), ue);
+		        }
+                mailService.sendMessageWithTemplate(mailConfirmationTemplate, bindings, email, mailSender, null, null,
+                        locale, modulePackageNameToUse);
             } catch (ScriptException e) {
                 logger.error("Cannot generate confirmation mail",e);
             }
@@ -210,6 +232,31 @@ public class SubscribeAction extends Action {
         return false;
     }
 
+	/**
+	* Check if templatSet has mail template
+	*/
+    private String getTemplateName(String template, JCRNodeWrapper node,  final Locale locale, String defaultTemplate){
+    	String templateToReturn = defaultTemplate;
+
+    	try {
+	    	//try if it is multilingual
+	        String suffix = StringUtils.substringAfterLast(template, ".");
+	    	String languageMailConfTemplate = template.substring(0, template.length() - (suffix.length()+1)) + "_" + locale.toString() + "." + suffix;
+	    	String templatePackageName = node.getResolveSite().getTemplatePackageName();
+	    	JahiaTemplatesPackage templatePackage = ServicesRegistry.getInstance().getJahiaTemplateManagerService().getTemplatePackage(templatePackageName);
+	    	org.springframework.core.io.Resource templateRealPath = templatePackage.getResource(languageMailConfTemplate);
+	    	if(templateRealPath == null) {
+	          templateRealPath = templatePackage.getResource(template);
+	    	}
+	    	if (templateRealPath!=null){
+	    		templateToReturn = templatePackageName;
+	    	}
+    	} catch (Exception ue){
+    		logger.error("Error resolving template for site");
+    	}
+
+    	return templateToReturn;
+    }
     public void setAllowRegistrationWithoutEmail(boolean allowRegistrationWithoutEmail) {
 		this.allowRegistrationWithoutEmail = allowRegistrationWithoutEmail;
 	}

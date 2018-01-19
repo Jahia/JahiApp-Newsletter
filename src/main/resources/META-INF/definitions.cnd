@@ -6,6 +6,14 @@
 <jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 
 //---------------------------------------------------------
+//Modification SPW pour mailsender
+//---------------------------------------------------------
+[jmix:newsletterSender] mixin
+ extends=jnt:virtualsite
+ itemtype=options
+ - newsletterMailSender (string) nofulltext
+
+//---------------------------------------------------------
 // Subscriptions
 //---------------------------------------------------------
 
