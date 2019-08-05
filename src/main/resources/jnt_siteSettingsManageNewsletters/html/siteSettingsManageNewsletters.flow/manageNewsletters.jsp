@@ -46,10 +46,12 @@
 
 <div>
     <div>
-        <button class="btn" onclick="submitNewsletterForm('editNewsletter')">
-            <i class="icon-plus"></i>
-            &nbsp;<fmt:message key="newsletter.create"/>
-        </button>
+        <c:if test="${jcr:hasPermission(currentNode,'jcr:write')}" >
+            <button class="btn" onclick="submitNewsletterForm('editNewsletter')">
+                <i class="icon-plus"></i>
+                &nbsp;<fmt:message key="newsletter.create"/>
+            </button>
+        </c:if>
     </div>
 
     <p>
@@ -102,56 +104,58 @@
                     <fmt:message var="i18nNeedPublish" key="newsletter.needPublish"/><c:set var="i18nNeedPublish" value="${functions:escapeJavaScript(i18nNeedPublish)}"/>
 
                     <c:forEach items="${newsletters}" var="newsletter" varStatus="loopStatus">
-                        <c:set var="hasPublication" value="${not empty newsletter.properties['j:lastPublished']}"/>
-                        <c:set var="needPublication" value="${jcr:needPublication(newsletter, renderContext.mainResourceLocale.language, false, false, false)}"/>
+                        <c:if test="${jcr:hasPermission(newsletter,'jcr:write')}" >
+                            <c:set var="hasPublication" value="${not empty newsletter.properties['j:lastPublished']}"/>
+                            <c:set var="needPublication" value="${jcr:needPublication(newsletter, renderContext.mainResourceLocale.language, false, false, false)}"/>
 
-                        <tr>
-                            <td>${loopStatus.count}</td>
-                            <td>
-                                <a title="${i18nEdit}" href="#details" onclick="submitNewsletterForm('manageIssues', '${newsletter.identifier}')">${fn:escapeXml(newsletter.displayableName)}</a>
-                            </td>
-                            <td>
-                                <span class="label ${newsletter.properties["j:allowUnregisteredUsers"].boolean ? 'label-info' : 'label-important'}">
-                                        ${newsletter.properties["j:allowUnregisteredUsers"].boolean ? i18nYes : i18nNo}
-                                </span>
-                            </td>
-                            <td>
-                                <jcr:sql var="numberOfIssuesQuery" sql="select [jcr:uuid] from [jnt:newsletterIssue] as i where isdescendantnode(i,['${newsletter.path}'])"/>
-                                ${numberOfIssuesQuery.rows.size}
-                            </td>
-                            <td>
-                                <a style="margin-bottom:0;" class="btn btn-small" title="${i18nEdit}" href="#edit" onclick="submitNewsletterForm('editNewsletter', '${newsletter.identifier}')">
-                                    <i class="icon-edit"></i>
-                                </a>
-
-                                <a style="margin-bottom:0;" class="btn btn-small" title="${i18nIssues}" href="#issues" onclick="submitNewsletterForm('manageIssues', '${newsletter.identifier}')">
-                                    <i class="icon-envelope"></i>
-                                </a>
-
-                                <c:choose>
-                                    <c:when test="${hasPublication}">
-                                        <a style="margin-bottom:0;" class="btn btn-small" title="${i18nSubscriptions}" href="#subscriptions" onclick="submitNewsletterForm('manageSubscriptions', '${newsletter.identifier}')">
-                                            <i class="icon-user"></i>
-                                        </a>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <a style="margin-bottom:0;" class="btn btn-small disabled" title="${i18nSubscriptions} - ${i18nNeedPublish}" href="#subscriptions" onclick="return false;">
-                                            <i class="icon-user"></i>
-                                        </a>
-                                    </c:otherwise>
-                                </c:choose>
-
-                                <a style="margin-bottom:0;" class="btn btn-danger btn-small" title="${i18nRemove}" href="#delete" onclick="if (confirm('${i18nRemoveConfirm}')) { submitNewsletterForm('removeNewsletter', '${newsletter.identifier}');} return false;">
-                                    <i class="icon-remove icon-white"></i>
-                                </a>
-
-                                <c:if test="${needPublication}">
-                                    <a style="margin-bottom:0;" class="btn btn-success btn-small" title="${i18nPublish}" href="#publish" onclick="submitNewsletterForm('publishNewsletter', '${newsletter.identifier}')">
-                                        <i class="icon-white icon-globe"></i>${i18nPublish}
+                            <tr>
+                                <td>${loopStatus.count}</td>
+                                <td>
+                                    <a title="${i18nEdit}" href="#details" onclick="submitNewsletterForm('manageIssues', '${newsletter.identifier}')">${fn:escapeXml(newsletter.displayableName)}</a>
+                                </td>
+                                <td>
+                                    <span class="label ${newsletter.properties["j:allowUnregisteredUsers"].boolean ? 'label-info' : 'label-important'}">
+                                            ${newsletter.properties["j:allowUnregisteredUsers"].boolean ? i18nYes : i18nNo}
+                                    </span>
+                                </td>
+                                <td>
+                                    <jcr:sql var="numberOfIssuesQuery" sql="select [jcr:uuid] from [jnt:newsletterIssue] as i where isdescendantnode(i,['${newsletter.path}'])"/>
+                                    ${numberOfIssuesQuery.rows.size}
+                                </td>
+                                <td>
+                                    <a style="margin-bottom:0;" class="btn btn-small" title="${i18nEdit}" href="#edit" onclick="submitNewsletterForm('editNewsletter', '${newsletter.identifier}')">
+                                        <i class="icon-edit"></i>
                                     </a>
-                                </c:if>
-                            </td>
-                        </tr>
+
+                                    <a style="margin-bottom:0;" class="btn btn-small" title="${i18nIssues}" href="#issues" onclick="submitNewsletterForm('manageIssues', '${newsletter.identifier}')">
+                                        <i class="icon-envelope"></i>
+                                    </a>
+
+                                    <c:choose>
+                                        <c:when test="${hasPublication}">
+                                            <a style="margin-bottom:0;" class="btn btn-small" title="${i18nSubscriptions}" href="#subscriptions" onclick="submitNewsletterForm('manageSubscriptions', '${newsletter.identifier}')">
+                                                <i class="icon-user"></i>
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a style="margin-bottom:0;" class="btn btn-small disabled" title="${i18nSubscriptions} - ${i18nNeedPublish}" href="#subscriptions" onclick="return false;">
+                                                <i class="icon-user"></i>
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+
+                                    <a style="margin-bottom:0;" class="btn btn-danger btn-small" title="${i18nRemove}" href="#delete" onclick="if (confirm('${i18nRemoveConfirm}')) { submitNewsletterForm('removeNewsletter', '${newsletter.identifier}');} return false;">
+                                        <i class="icon-remove icon-white"></i>
+                                    </a>
+
+                                    <c:if test="${needPublication}">
+                                        <a style="margin-bottom:0;" class="btn btn-success btn-small" title="${i18nPublish}" href="#publish" onclick="submitNewsletterForm('publishNewsletter', '${newsletter.identifier}')">
+                                            <i class="icon-white icon-globe"></i>${i18nPublish}
+                                        </a>
+                                    </c:if>
+                                </td>
+                            </tr>
+                        </c:if>
                     </c:forEach>
                 </c:otherwise>
             </c:choose>
