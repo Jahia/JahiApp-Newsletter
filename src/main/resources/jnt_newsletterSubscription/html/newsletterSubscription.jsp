@@ -194,10 +194,6 @@
 				                    <input type="text" name="${fld.string}" id="subscribeForm-${currentNode.identifier}-${fldKey}" class="field" value="" tabindex="${20 + status.count}" size="30"/>
 				                </p>
 			                </c:forEach>
-                            <p class="field">
-                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha />
-                                <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
-                            </p>
 
 			                <input class="button" type="button" value=" <fmt:message key="label.subscribe"/> "
 			                       tabindex="30" onclick="$('#subscribeForm-${currentNode.identifier}').submit();">
@@ -219,10 +215,6 @@
 			                    <input type="text" name="email" id="subscribeForm-${currentNode.identifier}-email" class="field" value="" tabindex="20" size="40"/><span id="unsubscribeError-${currentNode.identifier}" style="color:red;"></span>
 			                </p>
 
-                            <p>
-                                <label class="left" for="captcha">${fn:escapeXml(jcr:label(props.captcha.definition,currentResource.locale))}</label><template:captcha /><br/>
-                                <label class="left" for="inputCaptcha"></label><input type="text" id="inputCaptcha" name="jcrCaptcha"/>
-                            </p>
 
 			                <input class="button" type="button" value=" <fmt:message key="label.unsubscribe"/> "
 			                       tabindex="30" onclick="$('#unsubscribeForm-${currentNode.identifier}').submit();">
