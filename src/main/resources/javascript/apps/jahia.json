@@ -1,0 +1,7 @@
+{
+  "jahia": {
+    "apps": {
+      "jahia": "javascript/apps/register.js"
+    }
+  }
+}

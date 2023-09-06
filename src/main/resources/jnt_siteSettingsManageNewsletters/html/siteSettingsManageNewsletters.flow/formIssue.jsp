@@ -108,11 +108,15 @@
 
     <c:choose>
         <c:when test="${isUpdate}">
-            <c:url var="actionUrl" value="${url.baseEdit}${issue.path}"/>
+            <c:url var="actionUrl" value="${url.baseEdit}${issue.path}">
+                <c:param name="redirect" value="false"/>
+            </c:url>
             <h2><fmt:message key="newsletter.issue.edit"/> - ${fn:escapeXml(issue.displayableName)}</h2>
         </c:when>
         <c:otherwise>
-            <c:url var="actionUrl" value="${url.baseEdit}${newsletter.path}/*"/>
+            <c:url var="actionUrl" value="${url.baseEdit}${newsletter.path}/*">
+                <c:param name="redirect" value="false"/>
+            </c:url>
             <h2><fmt:message key="newsletter.issue.create"/></h2>
         </c:otherwise>
     </c:choose>

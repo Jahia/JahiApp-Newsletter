@@ -21,15 +21,20 @@
 <%--@elvariable id="newsletter" type="org.jahia.services.content.JCRNodeWrapper"--%>
 <%--@elvariable id="newslettersRootNode" type="org.jahia.services.content.JCRNodeWrapper"--%>
 
-<template:addResources type="javascript" resources="jquery.min.js,jquery.form.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
+<template:addResources type="javascript"
+                       resources="jquery.min.js,jquery.form.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
 <template:addResources type="css" resources="admin-bootstrap.css"/>
 <template:addResources type="css" resources="jquery-ui.smoothness.css,jquery-ui.smoothness-jahia.css"/>
 <template:addResources type="css" resources="newsletter-settings.css"/>
 
-<fmt:message var="i18nNameMandatory" key="newsletter.errors.name.mandatory"/><c:set var="i18nNameMandatory" value="${fn:escapeXml(i18nNameMandatory)}"/>
-<fmt:message var="i18nSubscriptionPageMandatory" key="newsletter.errors.subscriptionPage.mandatory"/><c:set var="i18nSubscriptionPageMandatory" value="${fn:escapeXml(i18nSubscriptionPageMandatory)}"/>
-<fmt:message var="i18nCreationFailed" key="newsletter.errors.create.failed"/><c:set var="i18nCreationFailed" value="${fn:escapeXml(i18nCreationFailed)}"/>
-<fmt:message var="i18nUpdateFailed" key="newsletter.errors.update.failed"/><c:set var="i18nUpdateFailed" value="${fn:escapeXml(i18nUpdateFailed)}"/>
+<fmt:message var="i18nNameMandatory" key="newsletter.errors.name.mandatory"/><c:set var="i18nNameMandatory"
+                                                                                    value="${fn:escapeXml(i18nNameMandatory)}"/>
+<fmt:message var="i18nSubscriptionPageMandatory" key="newsletter.errors.subscriptionPage.mandatory"/><c:set
+        var="i18nSubscriptionPageMandatory" value="${fn:escapeXml(i18nSubscriptionPageMandatory)}"/>
+<fmt:message var="i18nCreationFailed" key="newsletter.errors.create.failed"/><c:set var="i18nCreationFailed"
+                                                                                    value="${fn:escapeXml(i18nCreationFailed)}"/>
+<fmt:message var="i18nUpdateFailed" key="newsletter.errors.update.failed"/><c:set var="i18nUpdateFailed"
+                                                                                  value="${fn:escapeXml(i18nUpdateFailed)}"/>
 
 
 <c:set var="site" value="${renderContext.mainResource.node.resolveSite}"/>
@@ -42,10 +47,10 @@
 <script type="text/javascript">
     function showNewsletterErrors(messages, separator) {
         var message = "";
-        for(var i = 0; i < messages.length; i++){
-            if(i == 0){
+        for (var i = 0; i < messages.length; i++) {
+            if (i == 0) {
                 message = messages[i];
-            }else {
+            } else {
                 message += (separator + messages[i]);
             }
         }
@@ -60,48 +65,48 @@
 
     function submitNewsletterForm(act, name, type) {
         $('#newsletterFormAction').val(act);
-        if(name){
+        if (name) {
             $('#newsletterActionName').val(name);
         }
-        if(type){
+        if (type) {
             $('#newsletterActionType').val(type);
         }
 
         $('#newsletterWebflowForm').submit();
     }
 
-    $(document).ready(function() {
-        $("#newsletterFormErrorClose").bind("click", function(){
+    $(document).ready(function () {
+        $("#newsletterFormErrorClose").bind("click", function () {
             hideNewsletterErrors();
         });
 
         var newsletterFormOptions = {
-            beforeSubmit: function(arr, $form, options) {
+            beforeSubmit: function (arr, $form, options) {
                 // validate fields
                 var messages = [];
-                if(!$("#newsletterName").val()) {
+                if (!$("#newsletterName").val()) {
                     messages.push("${i18nNameMandatory}");
                 }
-                if(!$("#newsletterSubscriptionPage").val()) {
+                if (!$("#newsletterSubscriptionPage").val()) {
                     messages.push("${i18nSubscriptionPageMandatory}");
                 }
-                if(messages.length > 0){
+                if (messages.length > 0) {
                     showNewsletterErrors(messages, "</br>");
                     return false;
                 }
-                arr.push({name:"j:allowUnregisteredUsers",value:$("#newsletterIsPublic").is(":checked")});
+                arr.push({name: "j:allowUnregisteredUsers", value: $("#newsletterIsPublic").is(":checked")});
             },
-            success: function() {
+            success: function () {
                 submitNewsletterForm("actionPerformed", $("#newsletterName").val(), "${isUpdate ? 'updated' : 'created'}");
             },
-            error: function() {
+            error: function () {
                 <c:choose>
-                    <c:when test="${isUpdate}">
-                        showNewsletterErrors("${i18nUpdateFailed}");
-                    </c:when>
-                    <c:otherwise>
-                        showNewsletterErrors("${i18nCreationFailed}");
-                    </c:otherwise>
+                <c:when test="${isUpdate}">
+                showNewsletterErrors("${i18nUpdateFailed}");
+                </c:when>
+                <c:otherwise>
+                showNewsletterErrors("${i18nCreationFailed}");
+                </c:otherwise>
                 </c:choose>
             }
         };
@@ -120,11 +125,15 @@
 
     <c:choose>
         <c:when test="${isUpdate}">
-            <c:url var="actionUrl" value="${url.baseEdit}${newsletter.path}"/>
+            <c:url var="actionUrl" value="${url.baseEdit}${newsletter.path}">
+                <c:param name="redirect" value="false"/>
+            </c:url>
             <h2><fmt:message key="newsletter.edit"/> - ${fn:escapeXml(newsletter.displayableName)}</h2>
         </c:when>
         <c:otherwise>
-            <c:url var="actionUrl" value="${url.baseEdit}${newslettersRootNode.path}/*"/>
+            <c:url var="actionUrl" value="${url.baseEdit}${newslettersRootNode.path}/*">
+                <c:param name="redirect" value="false"/>
+            </c:url>
             <h2><fmt:message key="newsletter.create"/></h2>
         </c:otherwise>
     </c:choose>
@@ -143,27 +152,39 @@
                     <div class="row-fluid">
                         <div class="span12">
                             <c:set var="newsletterName" value="${isUpdate ? newsletter.displayableName : ''}"/>
-                            <label for="newsletterName"><fmt:message key="label.name"/> <span class="text-error"><strong>*</strong></span></label>
-                            <input type="text" name="jcr:title" id="newsletterName" value="${fn:escapeXml(newsletterName)}"/>
+                            <label for="newsletterName"><fmt:message key="label.name"/> <span
+                                    class="text-error"><strong>*</strong></span></label>
+                            <input type="text" name="jcr:title" id="newsletterName"
+                                   value="${fn:escapeXml(newsletterName)}"/>
                         </div>
                     </div>
                     <div class="row-fluid">
                         <div class="span12">
-                            <c:set var="newsletterIsPublic" value="${isUpdate ? newsletter.properties['j:allowUnregisteredUsers'].boolean : true}"/>
-                            <label for="newsletterIsPublic"><fmt:message key="jmix_subscribable.j_allowUnregisteredUsers"/></label>
-                            <input type="checkbox" id="newsletterIsPublic" ${newsletterIsPublic ? 'checked="checked"' : ''}/>
+                            <c:set var="newsletterIsPublic"
+                                   value="${isUpdate ? newsletter.properties['j:allowUnregisteredUsers'].boolean : true}"/>
+                            <label for="newsletterIsPublic"><fmt:message
+                                    key="jmix_subscribable.j_allowUnregisteredUsers"/></label>
+                            <input type="checkbox"
+                                   id="newsletterIsPublic" ${newsletterIsPublic ? 'checked="checked"' : ''}/>
                         </div>
                     </div>
                     <div class="row-fluid">
                         <div class="span12">
                             <c:if test="${isUpdate}">
-                                <jcr:node var="subscriptionPage" uuid="${newsletter.properties['j:subscriptionPage'].string}"/>
+                                <jcr:node var="subscriptionPage"
+                                          uuid="${newsletter.properties['j:subscriptionPage'].string}"/>
                             </c:if>
-                            <label for="newsletterSubscriptionPage"><fmt:message key="jnt_newsletter.j_subscriptionPage"/> <span class="text-error"><strong>*</strong></span></label>
-                            <input type="hidden" id="newsletterSubscriptionPage" name="j:subscriptionPage" value="${isUpdate ? subscriptionPage.identifier : ''}"/>
-                            <input type="text" id="newsletterSubscriptionPageDecoy" class="left" value="${isUpdate ? subscriptionPage.displayableName : ''}"/>
+                            <label for="newsletterSubscriptionPage"><fmt:message
+                                    key="jnt_newsletter.j_subscriptionPage"/> <span
+                                    class="text-error"><strong>*</strong></span></label>
+                            <input type="hidden" id="newsletterSubscriptionPage" name="j:subscriptionPage"
+                                   value="${isUpdate ? subscriptionPage.identifier : ''}"/>
+                            <input type="text" id="newsletterSubscriptionPageDecoy" class="left"
+                                   value="${isUpdate ? subscriptionPage.displayableName : ''}"/>
                             <div class="left picker">
-                                <ui:pageSelector fieldId="newsletterSubscriptionPage" displayFieldId="newsletterSubscriptionPageDecoy" displayIncludeChildren="false" valueType="identifier"/>
+                                <ui:pageSelector fieldId="newsletterSubscriptionPage"
+                                                 displayFieldId="newsletterSubscriptionPageDecoy"
+                                                 displayIncludeChildren="false" valueType="identifier"/>
                             </div>
                         </div>
                     </div>

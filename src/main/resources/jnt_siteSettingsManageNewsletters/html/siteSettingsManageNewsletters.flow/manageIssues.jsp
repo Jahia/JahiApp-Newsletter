@@ -126,7 +126,9 @@
                         <c:set var="hasPublication" value="${not empty issue.properties['j:lastPublished']}"/>
                         <c:set var="needPublication" value="${jcr:needPublication(issue, renderContext.mainResourceLocale.language, false, false, false)}"/>
 
-                        <c:url var="issueEditModeURL" value="${url.baseEdit}${issue.path}.html"/>
+                        <c:url var="issueEditModeURL" value="${url.baseEdit}${issue.path}.html">
+                            <c:param name="redirect" value="false"/>
+                        </c:url>
                         <tr>
                             <td>${loopStatus.count}</td>
                             <td>
