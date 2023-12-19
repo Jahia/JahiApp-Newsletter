@@ -108,11 +108,11 @@
 
     <c:choose>
         <c:when test="${isUpdate}">
-            <c:url var="actionUrl" value="${url.baseEdit}${issue.path}"/>
+            <c:url var="actionUrl" value="${renderContext.mainResource.node.name}/newsletters/${newsletter.name}/${issue.name}"/>
             <h2><fmt:message key="newsletter.issue.edit"/> - ${fn:escapeXml(issue.displayableName)}</h2>
         </c:when>
         <c:otherwise>
-            <c:url var="actionUrl" value="${url.baseEdit}${newsletter.path}/*"/>
+            <c:url var="actionUrl" value="${renderContext.mainResource.node.name}/newsletters/${newsletter.name}/*"/>
             <h2><fmt:message key="newsletter.issue.create"/></h2>
         </c:otherwise>
     </c:choose>
